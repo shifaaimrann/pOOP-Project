@@ -49,7 +49,7 @@ int main() {
     PlayerSprite player(400.0f, 300.0f);//calling player constrtuctotr with inital position
     sf::Clock clock;
     sf::Color colors[] = {//all the colors of the game the ball can take
-        sf::Color(210, 0, 255), //pink
+        sf::Color(200, 0, 255), //pink
         sf::Color::Blue,
         sf::Color::Yellow,
         sf::Color::White
@@ -70,19 +70,19 @@ int main() {
         float dt = clock.restart().asSeconds();
         player.update(dt);
         for (int i = 0; i < numStripes; ++i) {
-            stripes[i].move(0, -scrollSpeed * dt);
-            if (stripes[i].getPosition().y < -stripeHeight) {
-                stripes[i].setPosition(0, (numStripes - 1) * stripeHeight);
+            stripes[i].move(0, scrollSpeed * dt); 
+            if (stripes[i].getPosition().y > 600) { 
+                stripes[i].setPosition(0, stripes[i].getPosition().y - (numStripes * stripeHeight));
             }
         }
         for (int i = 0; i < numSegments; ++i) {
-            leftSegments[i].move(0, -scrollSpeed * dt);
-            if (leftSegments[i].getPosition().y < -segmentHeight) {
-                leftSegments[i].setPosition(4, (numSegments - 1) * segmentHeight + 4);
+            leftSegments[i].move(0, scrollSpeed * dt);
+            if (leftSegments[i].getPosition().y > 600) {
+                leftSegments[i].setPosition(4, leftSegments[i].getPosition().y - (numSegments * segmentHeight));
             }
-            rightSegments[i].move(0, -scrollSpeed * dt);
-            if (rightSegments[i].getPosition().y < -segmentHeight) {
-                rightSegments[i].setPosition((800 - borderWidth) + 4, (numSegments - 1) * segmentHeight + 4);
+            rightSegments[i].move(0, scrollSpeed * dt); 
+            if (rightSegments[i].getPosition().y > 600) { 
+                rightSegments[i].setPosition((800 - borderWidth) + 4, rightSegments[i].getPosition().y - (numSegments * segmentHeight));
             }
         }
 
