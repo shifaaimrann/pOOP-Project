@@ -19,7 +19,7 @@ sf::Color getRainbowColor(float time) {
 }
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Color Switch");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Miffy Switch (=^=)");
     window.setFramerateLimit(60);
 
     //--- background setup!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
