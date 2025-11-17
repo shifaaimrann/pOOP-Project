@@ -76,7 +76,7 @@ int main() {
     sf::Clock gameTimeClock; 
 
     sf::Color colors[] = {
-    sf::Color(255, 0, 255), //pink
+    sf::Color(255, 0, 0), //pink
     sf::Color::Blue,
     sf::Color::Yellow,
     sf::Color::White
