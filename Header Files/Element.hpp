@@ -1,21 +1,34 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-// an abstract base class for all game objects
-// (like the player, stars, or obstacles)
-// it defines the "rules" that all child classes must follow
+// an abstract base class for all game objects(like the player, stars, or obstacles)
 class Element {
 public:
-    virtual ~Element() {} // virtual destructor for base class
-
-    // pure virtual update function, must be implemented by children
-    // 'dt' is delta time, ensuring smooth, frame-independent movement
-    virtual void update(float dt) = 0; 
-    
-    // pure virtual draw function
+    virtual ~Element() {} 
+    virtual void update(float ) = 0; 
     virtual void Draw(sf::RenderWindow& window) = 0;
 
-protected: // 'protected' lets child classes (like PlayerSprite) use these
+    
+    void setPosition(float x, float y) { 
+        position = sf::Vector2f(x, y); 
+    }
+    
+    // needed for wheel movement
+    void move(float x, float y) { 
+        position.x += x; 
+        position.y += y; 
+    }
+    
+    sf::Vector2f getPosition() const { 
+        return position; 
+    }
+    
+    // needed for color collision
+    sf::Color getColor() const { 
+        return color; 
+    }
+
+protected: 
     sf::Vector2f position;
     sf::Color    color; 
     bool         isActive;
