@@ -1,3 +1,4 @@
+// Header Files/Level.hpp
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
@@ -12,49 +13,44 @@
 class Level {
 public:
     Level(sf::RenderWindow& win); 
-    ~Level();
+    ~Level(); // destructor cleans up obstacles
 
     void loadLevel(int levelNum);
     void update(float dt);
     void handleInput(sf::Event& event);
     void draw();
     
-    // resets the current level
-    void restart();
+    // helpers for game manager
+    bool hasLost() const { return isGameOver; }
+    bool hasWon() const { return isWin; }
 
 private:
     sf::RenderWindow& window;
     
-    // game objects
+    // raw pointers for manual memory management
     PlayerSprite* player;
     HealthBar* healthBar;
     
+    // vector of pointers for mixed obstacle types
     std::vector<Obstacle*> obstacles;
-    std::vector<Star*>     stars;
+    std::vector<Star*> stars;
     
-    // --- background elements ---
-    std::vector<sf::RectangleShape> stripes;
-    std::vector<sf::RectangleShape> leftSegments;
-    std::vector<sf::RectangleShape> rightSegments;
-    sf::RectangleShape leftBorderBg;
-    sf::RectangleShape rightBorderBg;
-    sf::RectangleShape leftLine;
-    sf::RectangleShape rightLine;
+    // infinite background system
+    sf::Texture bgTexture;
+    sf::Sprite bgSprite1; 
+    sf::Sprite bgSprite2; 
 
-    // ui
+    // ui elements
     sf::Font font;
-    sf::Text gameOverText;
-    sf::Text winText;
     sf::Text scoreText;
     sf::Sprite scoreIcon;
     sf::Texture starTexture;
 
-    // state
     bool isGameOver;
     bool isWin;
-    int  currentLevel;
+    int currentLevel;
     float finishLineY;
     
-    // helper for background elements
+    // handles infinite scrolling
     void moveWorld(float offset);
 };
