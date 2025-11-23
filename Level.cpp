@@ -110,28 +110,28 @@ void Level::loadLevel(int levelNum) {
     else if (levelNum == 3) {
         // 1. Wheel inside a Wheel (Concentric)
         // Outer Wheel (Larger Radius: 160)
-        obstacles.push_back(new ColorWheel(400.f, 200.f, 160.f, 18.f, 60.f));
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 200.f, 18.f, 60.f));
         // Inner Wheel (Smaller Radius: 100) - Rotates opposite direction (-60)
-        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, -60.f));
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, -50.f));
         stars.push_back(new Star(400.f, 200.f)); // Star in the very center
 
         // 2. Paddle inside a Bigger Wheel
         // Big Wheel (Radius 180)
-        obstacles.push_back(new ColorWheel(400.f, -200.f, 180.f, 18.f, 50.f));
+        obstacles.push_back(new ColorWheel(400.f, -300.f, 180.f, 18.f, 50.f));
         // Paddle in the center of it
-        obstacles.push_back(new Paddle(400.f, -200.f, 180.f, 25.f));
+        obstacles.push_back(new Paddle(400.f, -300.f, 180.f, 25.f));
         stars.push_back(new Star(400.f, -200.f)); 
         stars.push_back(new Star(400.f, -60.f)); // Star between obj 1 and 2
 
         // 3. Paddle + Star
-        obstacles.push_back(new Paddle(400.f, -500.f, 200.f, 25.f));
+        obstacles.push_back(new Paddle(400.f, -700.f, 200.f, 25.f));
         stars.push_back(new Star(400.f, -530.f));
 
         // 4. Wheel + Star
-        obstacles.push_back(new ColorWheel(400.f, -800.f, 100.f, 18.f, 90.f));
+        obstacles.push_back(new ColorWheel(400.f, -900.f, 100.f, 18.f, 90.f));
         stars.push_back(new Star(400.f, -800.f));
 
-        finishLineY = -1000.f;
+        finishLineY = -1100.f;
     }
     else {
         // Default for Level 4-8 (Empty for now)

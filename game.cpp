@@ -138,12 +138,10 @@ void Game::update(float dt) {
     if (state == PLAYING && currentLevelObject) {
         currentLevelObject->update(dt);
 
-        // ... (background scrolling code stays the same) ...
             
         // CHECK FOR GAME OVER
         if (currentLevelObject->hasLost()) {
             state = GAME_OVER;
-            // Uses the same "You Died" screen for every level
             loadScreenBg("game_over.png"); 
         }
         
@@ -156,13 +154,11 @@ void Game::update(float dt) {
                 unlockedLevels++;
             }
             
-            // --- NEW SIMPLIFIED LOGIC ---
             if (currentLevelIdx == 8) {
-                // If we just beat Level 8, we beat the whole game!
+                //if we just beat Level 8, we beat the whole game!
                 loadScreenBg("win_game.png");
             } 
             else {
-                // For Levels 1-7, just show the generic "Level Complete" screen
                 loadScreenBg("level_win.png");
             }
         }
