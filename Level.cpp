@@ -61,24 +61,80 @@ void Level::loadLevel(int levelNum) {
     
     bgSprite1.setTexture(bgTexture);
     bgSprite2.setTexture(bgTexture);
-    
-    // stack them vertically
     bgSprite1.setPosition(0, 0);
     bgSprite2.setPosition(0, -static_cast<float>(bgTexture.getSize().y));
 
-    // --- level layouts ---
+    // --- LEVEL LAYOUTS ---
+    
+    // LEVEL 1: Wheel -> Paddle -> Wheel (3 Stars)
     if (levelNum == 1) {
+        // 1. Wheel + Star
         obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, 90.f));
         stars.push_back(new Star(400.f, 200.f));
-        obstacles.push_back(new Paddle(400.f, -150.f, 200.f, 25.f));
-        finishLineY = -700.f;
+
+        // 2. Paddle + Star
+        obstacles.push_back(new Paddle(400.f, -100.f, 200.f, 25.f));
+        stars.push_back(new Star(400.f, -150.f)); 
+
+        // 3. Wheel + Star
+        obstacles.push_back(new ColorWheel(400.f, -400.f, 100.f, 18.f, -90.f));
+        stars.push_back(new Star(400.f, -400.f));
+
+        finishLineY = -600.f;
     }
+    // LEVEL 2: Wheel -> Paddle -> Paddle -> Wheel -> Paddle (5 Stars)
     else if (levelNum == 2) {
-        obstacles.push_back(new ColorWheel(400.f, 0.f, 100.f, 18.f, -100.f));
-        finishLineY = -900.f;
+        // 1. Wheel + Star
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, 80.f));
+        stars.push_back(new Star(400.f, 200.f));
+
+        // 2. Paddle + Star
+        obstacles.push_back(new Paddle(400.f, -100.f, 200.f, 25.f));
+        stars.push_back(new Star(400.f, -130.f));
+
+        // 3. Paddle (Faster) + Star
+        obstacles.push_back(new Paddle(400.f, -400.f, 200.f, 25.f)); // You might want to increase speed in Paddle class later
+        stars.push_back(new Star(400.f, -430.f));
+
+        // 4. Wheel (Counter-clockwise) + Star
+        obstacles.push_back(new ColorWheel(400.f, -700.f, 100.f, 18.f, -100.f));
+        stars.push_back(new Star(400.f, -700.f));
+
+        // 5. Paddle + Star
+        obstacles.push_back(new Paddle(400.f, -1000.f, 200.f, 25.f));
+        stars.push_back(new Star(400.f, -1030.f));
+
+        finishLineY = -1200.f;
+    }
+    // LEVEL 3: Wheel-in-Wheel -> Paddle-in-Wheel -> Paddle -> Wheel (5 Stars)
+    else if (levelNum == 3) {
+        // 1. Wheel inside a Wheel (Concentric)
+        // Outer Wheel (Larger Radius: 160)
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 160.f, 18.f, 60.f));
+        // Inner Wheel (Smaller Radius: 100) - Rotates opposite direction (-60)
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, -60.f));
+        stars.push_back(new Star(400.f, 200.f)); // Star in the very center
+
+        // 2. Paddle inside a Bigger Wheel
+        // Big Wheel (Radius 180)
+        obstacles.push_back(new ColorWheel(400.f, -200.f, 180.f, 18.f, 50.f));
+        // Paddle in the center of it
+        obstacles.push_back(new Paddle(400.f, -200.f, 180.f, 25.f));
+        stars.push_back(new Star(400.f, -200.f)); 
+        stars.push_back(new Star(400.f, -60.f)); // Star between obj 1 and 2
+
+        // 3. Paddle + Star
+        obstacles.push_back(new Paddle(400.f, -500.f, 200.f, 25.f));
+        stars.push_back(new Star(400.f, -530.f));
+
+        // 4. Wheel + Star
+        obstacles.push_back(new ColorWheel(400.f, -800.f, 100.f, 18.f, 90.f));
+        stars.push_back(new Star(400.f, -800.f));
+
+        finishLineY = -1000.f;
     }
     else {
-        // empty placeholder for other levels
+        // Default for Level 4-8 (Empty for now)
         finishLineY = -500.f;
     }
 }

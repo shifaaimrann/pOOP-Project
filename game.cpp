@@ -138,26 +138,32 @@ void Game::update(float dt) {
     if (state == PLAYING && currentLevelObject) {
         currentLevelObject->update(dt);
 
-        // check for game over
+        // ... (background scrolling code stays the same) ...
+            
+        // CHECK FOR GAME OVER
         if (currentLevelObject->hasLost()) {
             state = GAME_OVER;
-            loadScreenBg("game_over.png");
+            // Uses the same "You Died" screen for every level
+            loadScreenBg("game_over.png"); 
         }
         
-        // check for win
+        // CHECK FOR WIN
         if (currentLevelObject->hasWon()) {
             state = WIN;
             
-            // unlock level if needed
+            // Logic to unlock the next level
             if (currentLevelIdx == unlockedLevels && unlockedLevels < 8) {
                 unlockedLevels++;
             }
             
-            // load custom win screen for this specific level
+            // --- NEW SIMPLIFIED LOGIC ---
             if (currentLevelIdx == 8) {
-                loadScreenBg("win_game.png"); // final win
-            } else {
-                loadScreenBg("win_lvl" + std::to_string(currentLevelIdx) + ".png");
+                // If we just beat Level 8, we beat the whole game!
+                loadScreenBg("win_game.png");
+            } 
+            else {
+                // For Levels 1-7, just show the generic "Level Complete" screen
+                loadScreenBg("level_win.png");
             }
         }
     }
