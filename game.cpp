@@ -16,7 +16,6 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch") {
 }
 
 Game::~Game() {
-    // manually delete all pointers to prevent leaks
     delete btnStart;
     delete btnRetry;
     delete btnMenu;

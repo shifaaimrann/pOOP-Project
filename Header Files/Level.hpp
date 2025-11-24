@@ -46,6 +46,7 @@ private:
     sf::Sprite scoreIcon;
     sf::Texture starTexture;
 
+    bool waitingToStart;
     bool isGameOver;
     bool isWin;
     int currentLevel;

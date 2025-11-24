@@ -40,7 +40,7 @@ void Level::loadLevel(int levelNum) {
     currentLevel = levelNum;
     isGameOver = false;
     isWin = false;
-    
+    waitingToStart = true;
     // clear previous level data
     for (size_t i = 0; i < obstacles.size(); ++i) delete obstacles[i];
     obstacles.clear();
@@ -142,16 +142,25 @@ void Level::loadLevel(int levelNum) {
 void Level::handleInput(sf::Event& event) {
     if (isGameOver || isWin) return;
 
-    if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Space) {
-            player->jump();
+    // Support both Spacebar AND Mouse Click for "Tap"
+    bool isTap = (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space) ||
+                 (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left);
+
+    if (isTap) {
+        if (waitingToStart) {
+            waitingToStart = false;
         }
+        
+        // Perform the jump
+        player->jump();
     }
 }
 
 void Level::update(float dt) {
     if (isGameOver || isWin) return;
-
+    if (waitingToStart) {
+        return; 
+    }
     player->update(dt); 
     for (size_t i = 0; i < obstacles.size(); ++i) obstacles[i]->update(dt);
     for (size_t i = 0; i < stars.size(); ++i) stars[i]->update(dt);
@@ -175,6 +184,13 @@ void Level::update(float dt) {
             player->onCollision("Star");
             healthBar->heal(20.f);
         }
+    }
+    
+    
+    // Screen height is 600. If player goes below 600 (plus a little buffer), they die.
+    if (pPos.y > 630.f) { 
+        isGameOver = true;
+        healthBar->setHealth(0); // Visual feedback
     }
 
     healthBar->setHealth(player->getHealth());
