@@ -9,6 +9,7 @@
 #include "ColorWheel.hpp"
 #include "star.hpp"
 #include "HealthBar.hpp"
+#include "HealthPotion.hpp"
 
 class Level {
 public:
@@ -23,6 +24,7 @@ public:
     // helpers for game manager
     bool hasLost() const { return isGameOver; }
     bool hasWon() const { return isWin; }
+    void resetGame();
 
 private:
     sf::RenderWindow& window;
@@ -30,6 +32,7 @@ private:
     // raw pointers for manual memory management
     PlayerSprite* player;
     HealthBar* healthBar;
+    HealthPotion* healthPotion;
     
     // vector of pointers for mixed obstacle types
     std::vector<Obstacle*> obstacles;
@@ -51,6 +54,7 @@ private:
     bool isWin;
     int currentLevel;
     float finishLineY;
+    bool potionSpawned;
     
     // handles infinite scrolling
     void moveWorld(float offset);

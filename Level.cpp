@@ -2,9 +2,11 @@
 #include "Header Files/Level.hpp"
 #include <iostream>
 
-Level::Level(sf::RenderWindow& win) : window(win) {
+Level::Level(sf::RenderWindow& win) : window(win) , healthPotion(nullptr){
     player = nullptr;
     healthBar = nullptr;
+    //healthPotion = nullptr;  // Initialize health potion
+    potionSpawned = false;
 
     font.loadFromFile("fonts/font.ttf");
     starTexture.loadFromFile("img/star.png");
@@ -27,7 +29,10 @@ Level::~Level() {
     // clean up single objects
     if (player) delete player;
     if (healthBar) delete healthBar;
-    
+    if (healthPotion != nullptr) {
+        delete healthPotion;
+    }
+
     // clean up vectors of pointers
     for (size_t i = 0; i < obstacles.size(); ++i) delete obstacles[i];
     obstacles.clear();
@@ -36,22 +41,31 @@ Level::~Level() {
     stars.clear();
 }
 
+
 void Level::loadLevel(int levelNum) {
     currentLevel = levelNum;
     isGameOver = false;
     isWin = false;
     waitingToStart = true;
+    potionSpawned = false;
     // clear previous level data
     for (size_t i = 0; i < obstacles.size(); ++i) delete obstacles[i];
     obstacles.clear();
     for (size_t i = 0; i < stars.size(); ++i) delete stars[i];
     stars.clear();
+
+        //Clean up old potion if it exists
+    if (healthPotion != nullptr) {
+        delete healthPotion;
+        healthPotion = nullptr;
+    }
     
-    if (player) delete player;
+  if (player) delete player;
     player = new PlayerSprite(400.f, 500.f);
     
     if (healthBar) delete healthBar;
-    healthBar = new HealthBar(100.f, { 10.f, 10.f }, { 200.f, 20.f });
+    healthBar = new HealthBar(100.f, {10.f, 10.f});
+
 
     // --- load infinite background ---
     std::string bgFile = "img/level backgrounds/level" + std::to_string(levelNum) + ".png";
@@ -157,13 +171,38 @@ void Level::handleInput(sf::Event& event) {
 }
 
 void Level::update(float dt) {
+
     if (isGameOver || isWin) return;
     if (waitingToStart) {
         return; 
     }
+    
     player->update(dt); 
     for (size_t i = 0; i < obstacles.size(); ++i) obstacles[i]->update(dt);
     for (size_t i = 0; i < stars.size(); ++i) stars[i]->update(dt);
+
+    float healthPercent = player->getHealth() / 100.f;
+
+// Don't spawn potion until player actually begins the level
+if (!waitingToStart) {
+    if (healthPercent <= 0.1f && !potionSpawned && healthPotion == nullptr) {
+        sf::Vector2f playerPos = player->getPosition();
+        healthPotion = new HealthPotion(playerPos.x, playerPos.y - 100.f);
+        potionSpawned = true;
+    }
+}
+
+    if (healthPotion != nullptr) {
+        healthPotion->update(dt);
+        
+        // Check if expired (use the public method)
+        if (healthPotion->isExpired()) {
+            delete healthPotion;
+            healthPotion = nullptr;
+            potionSpawned = false;
+        }
+    }
+
 
     // collision checks
     sf::FloatRect pBounds = player->getBounds();
@@ -172,8 +211,9 @@ void Level::update(float dt) {
 
     for (size_t i = 0; i < obstacles.size(); ++i) {
         if (obstacles[i]->checkCollision(pBounds, pColor, pPos)) {
-            player->onCollision("Obstacle");
-            healthBar->damage(30.f); 
+            float damage = obstacles[i]->getDamage();
+            player->onCollision("Obstacle", damage);
+            //healthBar->damage(10.f); 
             player->move(0, 20.f); 
         }
     }
@@ -181,11 +221,20 @@ void Level::update(float dt) {
     for (size_t i = 0; i < stars.size(); ++i) {
         if (!stars[i]->isCollected() && pBounds.intersects(stars[i]->getBounds())) {
             stars[i]->collect();
-            player->onCollision("Star");
+            player->onCollision("Star", 0.0f);
             healthBar->heal(20.f);
         }
     }
-    
+
+    if (healthPotion != nullptr && !healthPotion->hasBeenCollected()) {
+    if (pBounds.intersects(healthPotion->getBounds())) {
+        float healAmount = healthPotion->getHealAmount();
+        float newHealth = player->getHealth() + healAmount;
+        player->setHealth(newHealth);
+        healthPotion->collect();
+        potionSpawned = false;
+    }
+}
     
     // Screen height is 600. If player goes below 600 (plus a little buffer), they die.
     if (pPos.y > 630.f) { 
@@ -236,6 +285,11 @@ void Level::draw() {
     // draw game objects
     for (size_t i = 0; i < obstacles.size(); ++i) obstacles[i]->Draw(window);
     for (size_t i = 0; i < stars.size(); ++i) stars[i]->Draw(window);
+
+
+    if (healthPotion != nullptr && !healthPotion->hasBeenCollected()) {
+        healthPotion->Draw(window);
+}
     
     // draw ui
     if (!isGameOver && !isWin) {

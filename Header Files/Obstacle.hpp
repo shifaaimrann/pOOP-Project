@@ -7,9 +7,7 @@ class Obstacle : public Element {
 public:
     virtual void Draw(sf::RenderWindow& window) = 0;
     virtual void update(float dt) = 0;
-
-    // --- NEW: Each obstacle must decide if it hit the player ---
-    // Returns TRUE if the player hit the wrong color (Game Over condition)
+    virtual float getDamage() const = 0;
     virtual bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const = 0;
 
     // Helper to check simple overlap
@@ -78,10 +76,68 @@ public:
         return false;
     }
 
+    float getDamage() const override { 
+        return 20.0f; 
+    }
+
 private:
     sf::RectangleShape paddleShape;
     std::vector<sf::Color> validColors;
     int colorIndex;
     float switchTimer;
     float switchInterval;
+};
+
+
+class LaserBeam : public Obstacle {
+public:
+    LaserBeam(float x, float y, float width, float height, float speed = 0.f)
+    {
+        position = {x, y};
+        isActive = true;
+
+        beam.setSize({width, height});
+        beam.setOrigin(width / 2.f, height / 2.f);
+        beam.setPosition(position);
+        beam.setFillColor(sf::Color(255, 50, 50));   // red laser
+
+        this->speed = speed; // if you want it to move horizontally
+    }
+
+    void update(float dt) override {
+        // OPTIONAL: move left-right
+        if (speed != 0.f) {
+            position.x += speed * dt;
+
+            // bounce from edges
+            if (position.x < 50 || position.x > 750)
+                speed = -speed;
+        }
+
+        beam.setPosition(position);
+    }
+
+    void Draw(sf::RenderWindow& window) override {
+        window.draw(beam);
+    }
+
+    sf::FloatRect getBounds() const override {
+        return beam.getGlobalBounds();
+    }
+
+    // Simple: if intersect → damage
+    bool checkCollision(sf::FloatRect playerBounds,
+                        sf::Color playerColor,
+                        sf::Vector2f playerPos) const override
+    {
+        return playerBounds.intersects(beam.getGlobalBounds());
+    }
+
+    float getDamage() const override {
+        return 15.0f;  // laser deals medium damage
+    }
+
+private:
+    sf::RectangleShape beam;
+    float speed;
 };

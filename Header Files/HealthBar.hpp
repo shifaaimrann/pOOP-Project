@@ -1,63 +1,73 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include "Element.hpp"   // include the base class
+#include "Element.hpp"
 
 class HealthBar : public Element {
 public:
-    HealthBar(float maxHealth, sf::Vector2f pos, sf::Vector2f size)
-        : m_maxHealth(maxHealth), m_currentHealth(maxHealth)
-    {
-        position = pos;        // from Element
-        color = sf::Color::White;
+    HealthBar(float maxHealth, sf::Vector2f pos): m_maxHealth(maxHealth), m_currentHealth(maxHealth){
+        position = pos;
         isActive = true;
+        emptyTex.loadFromFile("img/health_zero1.png");         // Load textures
+        fullTex.loadFromFile("img/health_full.png");
+        emptySprite.setTexture(emptyTex);
+        fullSprite.setTexture(fullTex);
+        emptySprite.setPosition(position);
+        fullSprite.setPosition(position);
 
-        m_size = size;
+        // Store full width for cropping
+        fullWidth = fullTex.getSize().x;
 
-        // Background
-        m_background.setSize(size);
-        m_background.setFillColor(sf::Color(110, 80, 150));   // lavender
-        m_background.setPosition(position);
+        // Ensure fullSprite initially uses the whole texture
+        fullSprite.setTextureRect(sf::IntRect(0, 0, fullWidth, fullTex.getSize().y));
+        emptySprite.setScale(0.09f, 0.09f);  // adjust scale as needed
+        fullSprite.setScale(0.09f, 0.09f);
 
-        // Foreground (actual health)
-        m_foreground.setSize(size);
-        m_foreground.setFillColor(sf::Color(219, 185, 255));  // lilac
-        m_foreground.setPosition(position);
     }
 
-    void update(float dt) override {
-        // Nothing needed for now
-    }
+    void update(float dt) override {}
 
     void Draw(sf::RenderWindow& window) override {
-        window.draw(m_background);
-        window.draw(m_foreground);
+        window.draw(emptySprite);   // Background bar
+        window.draw(fullSprite);    // Fill bar (cropped)
     }
-
-    
+    float getCurrentHealth() const { 
+    return m_currentHealth; 
+}
 
     void setHealth(float hp) {
         m_currentHealth = std::max(0.f, std::min(hp, m_maxHealth));
-
         float percent = m_currentHealth / m_maxHealth;
 
-        m_foreground.setSize({ m_size.x * percent, m_size.y });
+        // Crop full bar horizontally
+        sf::IntRect rect = fullSprite.getTextureRect();
+        rect.width = static_cast<int>(fullWidth * percent);
+        fullSprite.setTextureRect(rect);
     }
 
     void damage(float amount) {
-        setHealth(m_currentHealth - amount);
-    }
+    //float reduced = amount * 0.1f;   // takes only 10% damage
+    setHealth(m_currentHealth - amount);
+}
 
-    void heal(float amount) {
-        setHealth(m_currentHealth + amount);
-    }
+    void heal(float amount)   { setHealth(m_currentHealth + amount); }
+
+   void setPositionTopLeft(float offsetX = 10.f, float offsetY = 10.f){
+    emptySprite.setPosition(offsetX, offsetY);
+    fullSprite.setPosition(offsetX, offsetY);
+}
+
 
 private:
     float m_maxHealth;
     float m_currentHealth;
 
-    sf::Vector2f m_size;
+    sf::Texture emptyTex;  // 0% bar
+    sf::Texture fullTex;   // 100% bar
 
-    sf::RectangleShape m_background;
-    sf::RectangleShape m_foreground;
+    sf::Sprite emptySprite;
+    sf::Sprite fullSprite;
+
+    int fullWidth;         // original width of full bar
 };
+
 

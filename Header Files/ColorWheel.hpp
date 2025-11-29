@@ -14,6 +14,7 @@ public:
     // --- NEW: The complex math goes here, hiding it from Main ---
     virtual bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
 
+    float getDamage() const override {return 8.0f;}
     sf::Color getColorAtAngle(float worldAngle) const;
 
 private:

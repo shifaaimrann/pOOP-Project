@@ -109,6 +109,29 @@ void PlayerSprite::update(float dt) {
             particles[i].shape.setFillColor(c);
         }
     }
+    if (damageCooldown > 0.f) {
+    damageCooldown -= dt;
+
+    // blinking
+    blinkTimer -= dt;
+    if (blinkTimer <= 0.f) {
+        blinkTimer = blinkInterval;
+        spriteVisible = !spriteVisible;
+
+        playerSprite.setColor(spriteVisible
+            ? color
+            : sf::Color(color.r, color.g, color.b, 80));
+    }
+
+    // stop blinking when cooldown ends
+    if (damageCooldown <= 0.f) {
+        spriteVisible = true;
+        playerSprite.setColor(color);
+        damageCooldown = 0.f;
+    }
+}
+
+
 }
 
 void PlayerSprite::Draw(sf::RenderWindow& window) {
@@ -132,16 +155,25 @@ void PlayerSprite::changeColor(sf::Color newColor) {
     playerSprite.setColor(color);
 }
 
-void PlayerSprite::onCollision(const std::string& type) {
+void PlayerSprite::onCollision(const std::string& type, float damageAmount) {
+        // Damage HealthBar instead of PlayerSprite
     if (type == "Obstacle") {
-        health -= 30.0f; 
-        velocity.y = 150.0f; // bounce
-        if (health < 0) health = 0;
+
+        // DAMAGE ONLY IF COOLDOWN IS 0
+        if (damageCooldown <= 0.f) {
+            health -= damageAmount;
+            if (health < 0.f) health = 0.f;
+            damageCooldown = damageDelay; // start cooldown
+            blinkTimer = blinkInterval;
+        }
+        // NO BOUNCE
+        velocity.y = 0.0f; // do nothing
     }
+
     else if (type == "Star") {
         score++;
-        health += 20.0f;
-        if (health > 100.0f) health = 100.0f;
+        //health += 20.0f;
+        //if (health > 100.0f) health = 100.0f;
     }
 }
 

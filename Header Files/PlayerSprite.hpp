@@ -3,7 +3,7 @@
 #include <string> 
 #include <vector>
 #include <SFML/Graphics.hpp>
-
+#include "HealthBar.hpp"
 // simple struct for the trail
 struct Particle {
     sf::Vector2f position;
@@ -23,7 +23,11 @@ public:
 
     void jump();
     void changeColor(sf::Color newColor);
-    void onCollision(const std::string& type); 
+    void onCollision(const std::string& type, float); 
+    inline void setHealth(float hp) {
+        health = std::max(0.f, std::min(hp, 100.f));
+    }
+
 
     // getters
     sf::Vector2f getPosition() const;
@@ -50,4 +54,14 @@ private:
     std::vector<Particle> particles;
     float particleSpawnTimer;
     float totalTime; // for rainbow effect
+
+    float damageCooldown = 0.f;
+    const float damageDelay = 0.4f;  // 0.4 seconds between hits
+    bool spriteVisible = true;
+    float blinkTimer = 0.f;
+    const float blinkInterval = 0.07f;
+
+
+
+
 };
