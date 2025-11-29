@@ -3,8 +3,7 @@
 
 int main() {
     Game game;
-
     game.run();
-
+    std::cout << " total score: " << game.getScore() << std::endl;
     return 0;
 }

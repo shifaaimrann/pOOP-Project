@@ -10,28 +10,29 @@
 #include "star.hpp"
 #include "HealthBar.hpp"
 #include "HealthPotion.hpp"
+class Game;
+class PlayerSprite;
+
 
 class Level {
 public:
     Level(sf::RenderWindow& win); 
     ~Level(); // destructor cleans up obstacles
 
-    void loadLevel(int levelNum);
-    void update(float dt);
+    void loadLevel(int levelNum, Game*);
+    void update(float dt, Game*);
     void handleInput(sf::Event& event);
     void draw();
     
     // helpers for game manager
     bool hasLost() const { return isGameOver; }
     bool hasWon() const { return isWin; }
-    void resetGame();
 
 private:
     sf::RenderWindow& window;
     
     // raw pointers for manual memory management
     PlayerSprite* player;
-    HealthBar* healthBar;
     HealthPotion* healthPotion;
     
     // vector of pointers for mixed obstacle types

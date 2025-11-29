@@ -44,17 +44,8 @@ public:
         fullSprite.setTextureRect(rect);
     }
 
-    void damage(float amount) {
-    //float reduced = amount * 0.1f;   // takes only 10% damage
-    setHealth(m_currentHealth - amount);
-}
-
+    void damage(float amount) {setHealth(m_currentHealth - amount);}
     void heal(float amount)   { setHealth(m_currentHealth + amount); }
-
-   void setPositionTopLeft(float offsetX = 10.f, float offsetY = 10.f){
-    emptySprite.setPosition(offsetX, offsetY);
-    fullSprite.setPosition(offsetX, offsetY);
-}
 
 
 private:

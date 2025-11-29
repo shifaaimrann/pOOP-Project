@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath> // for sin
 
+
 const float fallStrength = 981.0f; 
 const float jumpStrength = -350.0f; 
 const float ANIMATION_SPEED = 0.1f; 
@@ -14,11 +15,13 @@ sf::Color getRainbow(float t) {
     return sf::Color(r * 255, g * 255, b * 255);
 }
 
-PlayerSprite::PlayerSprite(float x, float y) {
+PlayerSprite::PlayerSprite(float x, float y) : healthBar(nullptr){
     if (!playerTexture.loadFromFile("img/sprite sheet-grayscale.png")) {
         std::cerr << "error loading sprite sheet" << std::endl;
     }
     playerSprite.setTexture(playerTexture);
+
+    healthBar = new HealthBar(100.f, {10.f, 10.f});
     
     frameWidth = 256;  
     frameHeight = 256;
@@ -144,6 +147,7 @@ void PlayerSprite::Draw(sf::RenderWindow& window) {
     
     // draw player on top
     window.draw(playerSprite);
+    healthBar->Draw(window);
 }
 
 void PlayerSprite::jump() {
@@ -155,7 +159,7 @@ void PlayerSprite::changeColor(sf::Color newColor) {
     playerSprite.setColor(color);
 }
 
-void PlayerSprite::onCollision(const std::string& type, float damageAmount) {
+void PlayerSprite::onCollision(const std::string& type, float damageAmount, Game* game) {
         // Damage HealthBar instead of PlayerSprite
     if (type == "Obstacle") {
 
@@ -163,6 +167,7 @@ void PlayerSprite::onCollision(const std::string& type, float damageAmount) {
         if (damageCooldown <= 0.f) {
             health -= damageAmount;
             if (health < 0.f) health = 0.f;
+            healthBar->damage(damageAmount);
             damageCooldown = damageDelay; // start cooldown
             blinkTimer = blinkInterval;
         }
@@ -172,8 +177,7 @@ void PlayerSprite::onCollision(const std::string& type, float damageAmount) {
 
     else if (type == "Star") {
         score++;
-        //health += 20.0f;
-        //if (health > 100.0f) health = 100.0f;
+        game->setScore();
     }
 }
 

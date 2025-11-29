@@ -4,6 +4,9 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 #include "HealthBar.hpp"
+#include "game.hpp"
+
+class Game;
 // simple struct for the trail
 struct Particle {
     sf::Vector2f position;
@@ -16,16 +19,17 @@ struct Particle {
 class PlayerSprite : public Element {
 public:
     PlayerSprite(float x, float y); 
-    virtual ~PlayerSprite() {} 
+    virtual ~PlayerSprite() {delete healthBar;} 
 
     virtual void update(float dt) override;
     virtual void Draw(sf::RenderWindow& window) override;
 
     void jump();
     void changeColor(sf::Color newColor);
-    void onCollision(const std::string& type, float); 
+    void onCollision(const std::string& type, float, Game* game); 
     inline void setHealth(float hp) {
         health = std::max(0.f, std::min(hp, 100.f));
+        healthBar->setHealth(hp);
     }
 
 
@@ -42,6 +46,7 @@ private:
     sf::Vector2f velocity;
     float        health; 
     int          score;  
+    HealthBar* healthBar;
     
     // animation vars
     sf::IntRect currentFrameRect; 
