@@ -83,6 +83,9 @@ void Level::loadLevel(int levelNum) {
     // LEVEL 1: Wheel -> Paddle -> Wheel (3 Stars)
     if (levelNum == 1) {
         // 1. Wheel + Star
+        //obstacles.push_back(new ColorSquare(400, 300, 200, 20, 80.f));
+        // obstacles.push_back(new ColorCross(400,300,300,15,80.f));
+        //obstacles.push_back(new ColorSpotWheel(400,300,300,15,30,80.f));
         obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, 90.f));
         stars.push_back(new Star(400.f, 200.f));
 

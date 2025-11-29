@@ -141,3 +141,82 @@ private:
     sf::RectangleShape beam;
     float speed;
 };
+
+class ColorSquare : public Obstacle {
+public:
+    ColorSquare(float x, float y, float sideLength, float thickness, float rotationSpeed);
+
+    void update(float dt) override;
+    void Draw(sf::RenderWindow& window) override;
+
+    float getDamage() const override { return 1.0f; }
+
+    bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
+
+    sf::FloatRect getBounds() const override;
+
+private:
+    sf::Color getColorAtSide(int side) const;
+
+private:
+    float m_size;
+    float m_thickness;
+    float m_rotation;
+    float m_rotationSpeed;
+
+    sf::VertexArray m_vertices;
+    sf::Color m_colors[4]; // Colors for 4 sides
+};
+
+class ColorSpotWheel : public Obstacle {
+public:
+    ColorSpotWheel(float x, float y, float radius, float spotRadius, int spotCount, float rotationSpeed);
+
+    void update(float dt) override;
+    void Draw(sf::RenderWindow& window) override;
+
+    float getDamage() const override { return 1.0f; }
+    bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
+
+    sf::FloatRect getBounds() const override;
+
+private:
+    float m_radius;
+    float m_spotRadius;
+    float m_rotationSpeed;
+    float m_rotation;
+    std::vector<sf::Color> m_spotColors;  // pre-assigned colors for each spot
+    int m_spotCount;
+
+    sf::CircleShape m_spot;  // reused for drawing
+
+    sf::Color m_colors[4];
+
+    sf::Color getColorAtAngle(float angle) const;
+};
+
+class ColorCross : public Obstacle {
+public:
+    ColorCross(float x, float y, float armLength, float thickness, float rotationSpeed);
+
+    void update(float dt) override;
+    void Draw(sf::RenderWindow& window) override;
+
+    float getDamage() const override { return 1.0f; }
+    bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
+
+    sf::FloatRect getBounds() const override;
+
+private:
+    float m_armLength;
+    float m_thickness;
+    float m_rotationSpeed;
+    float m_rotation;
+
+    sf::RectangleShape m_arm1; // vertical
+    sf::RectangleShape m_arm2; // horizontal
+
+    sf::Color m_colors[4]; // Pink, Blue, Yellow, Red
+
+    sf::Color getColorAtPoint(sf::Vector2f localPos) const;
+};
