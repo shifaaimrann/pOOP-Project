@@ -63,22 +63,13 @@ public:
         return sprite.getGlobalBounds();
     }
 
-    void collect() {
-        isCollected = true;
-        isActive = false;
-    }
+    void collect() {isCollected = true; isActive = false;}
 
-    bool isExpired() const {
-        return lifeTimer >= maxLifetime;
-    }
+    bool isExpired() const {return lifeTimer >= maxLifetime;}
 
-    bool hasBeenCollected() const {
-        return isCollected;
-    }
+    bool hasBeenCollected() const {return isCollected;}
 
-    float getHealAmount() const {
-        return 30.f; // Restores 30 health
-    }
+    float getHealAmount() const {return 30.f; }
 
 private:
     sf::Texture texture;

@@ -2,7 +2,7 @@
 #include "Header Files/game.hpp"
 #include <iostream>
 
-Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch") {
+Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0){
     window.setFramerateLimit(60);
     
     font.loadFromFile("fonts/font.ttf");
@@ -14,6 +14,10 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch") {
     initUI();
     loadScreenBg("start_screen.png"); 
 }
+
+void Game::setScore(){totalScore++;}
+int Game::getScore() const {return totalScore;}
+
 
 Game::~Game() {
     delete btnStart;
@@ -88,7 +92,7 @@ void Game::processEvents() {
                     
                     // create new level
                     currentLevelObject = new Level(window);
-                    currentLevelObject->loadLevel(currentLevelIdx);
+                    currentLevelObject->loadLevel(currentLevelIdx, this);
                     
                     state = PLAYING;
                 }
@@ -102,7 +106,7 @@ void Game::processEvents() {
         else if (state == GAME_OVER) {
             if (btnRetry->isClicked(event, window)) {
                 // reload same level
-                currentLevelObject->loadLevel(currentLevelIdx);
+                currentLevelObject->loadLevel(currentLevelIdx, this);
                 state = PLAYING;
             }
             if (btnMenu->isClicked(event, window)) {
@@ -121,7 +125,7 @@ void Game::processEvents() {
                 // load the next level
                 delete currentLevelObject;
                 currentLevelObject = new Level(window);
-                currentLevelObject->loadLevel(currentLevelIdx);
+                currentLevelObject->loadLevel(currentLevelIdx, this);
                 state = PLAYING;
             }
             
@@ -135,7 +139,7 @@ void Game::processEvents() {
 
 void Game::update(float dt) {
     if (state == PLAYING && currentLevelObject) {
-        currentLevelObject->update(dt);
+        currentLevelObject->update(dt, this);
 
             
         // CHECK FOR GAME OVER

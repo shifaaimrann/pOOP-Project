@@ -1,11 +1,10 @@
 // Level.cpp
 #include "Header Files/Level.hpp"
 #include <iostream>
+#include "Header Files/game.hpp"
 
 Level::Level(sf::RenderWindow& win) : window(win) , healthPotion(nullptr){
     player = nullptr;
-    healthBar = nullptr;
-    //healthPotion = nullptr;  // Initialize health potion
     potionSpawned = false;
 
     font.loadFromFile("fonts/font.ttf");
@@ -28,7 +27,6 @@ Level::Level(sf::RenderWindow& win) : window(win) , healthPotion(nullptr){
 Level::~Level() {
     // clean up single objects
     if (player) delete player;
-    if (healthBar) delete healthBar;
     if (healthPotion != nullptr) {
         delete healthPotion;
     }
@@ -42,7 +40,7 @@ Level::~Level() {
 }
 
 
-void Level::loadLevel(int levelNum) {
+void Level::loadLevel(int levelNum, Game* g1) {
     currentLevel = levelNum;
     isGameOver = false;
     isWin = false;
@@ -62,10 +60,6 @@ void Level::loadLevel(int levelNum) {
     
   if (player) delete player;
     player = new PlayerSprite(400.f, 500.f);
-    
-    if (healthBar) delete healthBar;
-    healthBar = new HealthBar(100.f, {10.f, 10.f});
-
 
     // --- load infinite background ---
     std::string bgFile = "img/level backgrounds/level" + std::to_string(levelNum) + ".png";
@@ -170,7 +164,7 @@ void Level::handleInput(sf::Event& event) {
     }
 }
 
-void Level::update(float dt) {
+void Level::update(float dt, Game* game) {
 
     if (isGameOver || isWin) return;
     if (waitingToStart) {
@@ -212,8 +206,7 @@ if (!waitingToStart) {
     for (size_t i = 0; i < obstacles.size(); ++i) {
         if (obstacles[i]->checkCollision(pBounds, pColor, pPos)) {
             float damage = obstacles[i]->getDamage();
-            player->onCollision("Obstacle", damage);
-            //healthBar->damage(10.f); 
+            player->onCollision("Obstacle", damage, nullptr);
             player->move(0, 20.f); 
         }
     }
@@ -221,8 +214,7 @@ if (!waitingToStart) {
     for (size_t i = 0; i < stars.size(); ++i) {
         if (!stars[i]->isCollected() && pBounds.intersects(stars[i]->getBounds())) {
             stars[i]->collect();
-            player->onCollision("Star", 0.0f);
-            healthBar->heal(20.f);
+            player->onCollision("Star", 0.0f, game);
         }
     }
 
@@ -239,10 +231,9 @@ if (!waitingToStart) {
     // Screen height is 600. If player goes below 600 (plus a little buffer), they die.
     if (pPos.y > 630.f) { 
         isGameOver = true;
-        healthBar->setHealth(0); // Visual feedback
+        player->setHealth(0.0f);
     }
 
-    healthBar->setHealth(player->getHealth());
     scoreText.setString(std::to_string(player->getScore()));
 
     if (player->getHealth() <= 0) isGameOver = true;
@@ -294,7 +285,6 @@ void Level::draw() {
     // draw ui
     if (!isGameOver && !isWin) {
         player->Draw(window);
-        healthBar->Draw(window);
         window.draw(scoreIcon);
         window.draw(scoreText);
     }

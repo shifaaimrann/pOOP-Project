@@ -4,6 +4,7 @@
 #include <vector>
 #include "Level.hpp"
 #include "Button.hpp"
+class Level;
 
 enum GameState { MENU, LEVEL_SELECT, PLAYING, GAME_OVER, WIN };
 
@@ -11,10 +12,13 @@ class Game {
 public:
     Game();
     ~Game(); // destructor to clean up pointers
+    void setScore();
+    int getScore() const;
 
     void run();
 
 private:
+    int totalScore;
     void processEvents();
     void update(float dt);
     void render();
