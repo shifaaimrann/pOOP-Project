@@ -1,6 +1,7 @@
 #include "Header Files/PlayerSprite.hpp"
+#include "Header Files/game.hpp"
 #include <iostream>
-#include <cmath> // for sin
+#include <cmath> 
 
 const float fallStrength = 981.0f; 
 const float jumpStrength = -350.0f; 
@@ -14,10 +15,12 @@ sf::Color getRainbow(float t) {
 }
 
 PlayerSprite::PlayerSprite(float x, float y) : healthBar(nullptr){
-    if (!playerTexture.loadFromFile("img/sprite sheet-grayscale.png")) {
-        std::cerr << "error loading sprite sheet" << std::endl;
-    }
-    playerSprite.setTexture(playerTexture);
+    // --- NEW: Load all color variants ---
+    // Ensure these files exist in img/playersprites/
+    if (!textures["Pink"].loadFromFile("img/playersprites/player_pink.png")) std::cerr << "Missing player_pink.png\n";
+    if (!textures["Blue"].loadFromFile("img/playersprites/player_blue.png")) std::cerr << "Missing player_blue.png\n";
+    if (!textures["Yellow"].loadFromFile("img/playersprites/player_yellow.png")) std::cerr << "Missing player_yellow.png\n";
+    if (!textures["Red"].loadFromFile("img/playersprites/player_red.png")) std::cerr << "Missing player_red.png\n";
 
     healthBar = new HealthBar(100.f, {10.f, 10.f});
     
@@ -27,49 +30,67 @@ PlayerSprite::PlayerSprite(float x, float y) : healthBar(nullptr){
     animationTimer = 0.0f;
 
     currentFrameRect = sf::IntRect(0, 0, frameWidth, frameHeight);
-    playerSprite.setTextureRect(currentFrameRect);
-
+    
     playerSprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
-    playerSprite.setScale(0.25f, 0.25f); 
+    playerSprite.setScale(0.32f, 0.32f); 
 
     position = sf::Vector2f(x, y);
-    color = sf::Color(255, 0, 255); 
+    
+    // Set initial color (e.g., Pink)
+    applyTexture("Pink");
+    
     isActive = true;
-    exploding = false; // Init
-
+    exploding = false; 
     velocity = sf::Vector2f(0.0f, 0.0f);
     health = 100.0f; 
     score = 0;
-
     particleSpawnTimer = 0.0f;
     totalTime = 0.0f;
 
     playerSprite.setPosition(position);
-    playerSprite.setColor(color);
 }
 
-// NEW: Explode logic
+// NEW: Switch to a specific texture map
+void PlayerSprite::applyTexture(const std::string& colorKey) {
+    currentColorKey = colorKey;
+    playerSprite.setTexture(textures[colorKey]);
+    playerSprite.setTextureRect(currentFrameRect); // Re-apply rect to new texture
+
+    // Update the inherited 'color' field so collisions work
+    if (colorKey == "Pink") color = sf::Color(255, 0, 255); // Magenta
+    else if (colorKey == "Blue") color = sf::Color::Blue;
+    else if (colorKey == "Yellow") color = sf::Color::Yellow;
+    else if (colorKey == "Red") color = sf::Color::Red;
+    
+    // NOTE: We DO NOT call playerSprite.setColor() anymore! 
+    // The texture provides the color.
+    playerSprite.setColor(sf::Color::White); // Reset tint to pure
+}
+
+void PlayerSprite::setRandomColor() {
+    // Pick a random color different from current? 
+    // Or just pure random. Usually pure random is fine.
+    int r = std::rand() % 4;
+    if (r == 0) applyTexture("Pink");
+    else if (r == 1) applyTexture("Blue");
+    else if (r == 2) applyTexture("Yellow");
+    else applyTexture("Red");
+}
+
 void PlayerSprite::explode() {
     exploding = true;
-    
-    // Spawn 50 explosion particles
     for(int i = 0; i < 50; ++i) {
         Particle p;
         p.position = position;
-        
-        // Random angle and speed for burst
         float angle = (std::rand() % 360) * 3.14159f / 180.f;
-        float speed = (std::rand() % 200 + 150); // Fast burst
-        
+        float speed = (std::rand() % 200 + 150); 
         p.velocity = sf::Vector2f(std::cos(angle) * speed, std::sin(angle) * speed);
-        p.lifetime = sf::seconds(1.0f + (std::rand() % 10)/10.f); // 1-2 seconds life
-        
+        p.lifetime = sf::seconds(1.0f + (std::rand() % 10)/10.f); 
         p.shape.setSize(sf::Vector2f(8, 8));
         p.shape.setOrigin(4, 4);
         p.shape.setPosition(p.position);
-        p.color = color; // Explosion is player's color
+        p.color = color; 
         p.shape.setFillColor(p.color);
-        
         particles.push_back(p);
     }
 }
@@ -77,8 +98,6 @@ void PlayerSprite::explode() {
 void PlayerSprite::update(float dt) {
     if (!isActive) return;
 
-    // --- Particle Logic (Always run this, even if exploding) ---
-    // Only spawn TRAIL particles if NOT exploding
     if (!exploding) {
         totalTime += dt;
         particleSpawnTimer += dt;
@@ -98,7 +117,6 @@ void PlayerSprite::update(float dt) {
         }
     }
 
-    // Update existing particles (for both trail and explosion)
     for (int i = particles.size() - 1; i >= 0; --i) {
         particles[i].lifetime -= sf::seconds(dt);
         if (particles[i].lifetime <= sf::Time::Zero) {
@@ -106,8 +124,6 @@ void PlayerSprite::update(float dt) {
         } else {
             particles[i].position += particles[i].velocity * dt;
             particles[i].shape.setPosition(particles[i].position);
-            
-            // fade out
             float maxLife = exploding ? 1.5f : 0.7f;
             float lifeRatio = particles[i].lifetime.asSeconds() / maxLife;
             sf::Color c = particles[i].color;
@@ -116,15 +132,13 @@ void PlayerSprite::update(float dt) {
         }
     }
 
-    // If exploding, STOP here. Do not process physics/animation.
     if (exploding) return;
 
-    // --- Normal Physics ---
     velocity.y += fallStrength * dt;     
     position.y += velocity.y * dt;  
     playerSprite.setPosition(position); 
 
-    // animation
+    // Animation Logic
     if (velocity.y < 0) { 
         animationTimer += dt;
         if (animationTimer >= ANIMATION_SPEED) {
@@ -139,18 +153,21 @@ void PlayerSprite::update(float dt) {
     }
     playerSprite.setTextureRect(currentFrameRect); 
 
-    // Damage blinking
+    // Blinking (Opacity)
     if (damageCooldown > 0.f) {
         damageCooldown -= dt;
         blinkTimer -= dt;
         if (blinkTimer <= 0.f) {
             blinkTimer = blinkInterval;
             spriteVisible = !spriteVisible;
-            playerSprite.setColor(spriteVisible ? color : sf::Color(color.r, color.g, color.b, 80));
+            // Modify alpha of white (no tint)
+            sf::Color c = sf::Color::White;
+            c.a = spriteVisible ? 255 : 80;
+            playerSprite.setColor(c);
         }
         if (damageCooldown <= 0.f) {
             spriteVisible = true;
-            playerSprite.setColor(color);
+            playerSprite.setColor(sf::Color::White);
             damageCooldown = 0.f;
         }
     }
@@ -158,13 +175,7 @@ void PlayerSprite::update(float dt) {
 
 void PlayerSprite::Draw(sf::RenderWindow& window) {
     if (!isActive) return;
-    
-    // draw particles first
-    for (const auto& p : particles) {
-        window.draw(p.shape);
-    }
-    
-    // Draw player ONLY if not exploding
+    for (const auto& p : particles) window.draw(p.shape);
     if (!exploding) {
         window.draw(playerSprite);
         healthBar->Draw(window);
@@ -173,11 +184,6 @@ void PlayerSprite::Draw(sf::RenderWindow& window) {
 
 void PlayerSprite::jump() {
     if (isActive && !exploding) velocity.y = jumpStrength; 
-}
-
-void PlayerSprite::changeColor(sf::Color newColor) {
-    color = newColor;
-    playerSprite.setColor(color);
 }
 
 void PlayerSprite::onCollision(const std::string& type, float damageAmount, Game* game) {
@@ -193,10 +199,17 @@ void PlayerSprite::onCollision(const std::string& type, float damageAmount, Game
     }
     else if (type == "Star") {
         score++;
-        game->setScore();
+        if(game) game->setScore();
+    }
+    // NEW: Color Changer Logic
+    else if (type == "ColorChanger") {
+        setRandomColor();
+        // Optional: Small upward boost when changing color?
+        // velocity.y = jumpStrength / 2; 
     }
 }
 
+// Getters
 sf::Vector2f PlayerSprite::getPosition() const { return position; }
 sf::FloatRect PlayerSprite::getBounds() const { return playerSprite.getGlobalBounds(); }
 int PlayerSprite::getScore() const { return score; }

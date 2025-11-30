@@ -13,6 +13,41 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0) {
     unlockedLevels = 8; 
     currentLevelObject = nullptr; 
 
+    // --- NEW: Load AND Resize Custom Cursor ---
+    // This fixes the "too big" issue and aligns the click point
+    sf::Texture cursorTex;
+    if (cursorTex.loadFromFile("img/cursor.png")) {
+        // 1. Create a sprite for the cursor
+        sf::Sprite cursorSprite(cursorTex);
+        
+        // 2. Target a standard cursor size (e.g., 32x32 pixels)
+        float targetSize = 32.0f; 
+        float scaleX = targetSize / cursorTex.getSize().x;
+        float scaleY = targetSize / cursorTex.getSize().y;
+        cursorSprite.setScale(scaleX, scaleY);
+
+        // 3. Draw resized cursor onto a Render Texture
+        sf::RenderTexture rt;
+        if (rt.create(32, 32)) {
+            rt.clear(sf::Color::Transparent);
+            rt.draw(cursorSprite);
+            rt.display();
+
+            // 4. Convert back to Image for the Cursor object
+            cursorImage = rt.getTexture().copyToImage();
+            
+            // 5. Set Cursor (Hotspot at 0,0 - top left)
+            if (gameCursor.loadFromPixels(cursorImage.getPixelsPtr(), {32, 32}, {0, 0})) {
+                window.setMouseCursor(gameCursor);
+            } else {
+                std::cerr << "Failed to create cursor from pixels" << std::endl;
+            }
+        }
+    } else {
+        std::cerr << "Error loading img/cursor.png" << std::endl;
+    }
+    // -------------------------------
+
     initUI();
     loadScreenBg("start_screen.png"); 
 
@@ -37,6 +72,11 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0) {
 
     // Start by playing menu music
     bgmMenu.play();
+
+    // Initialize final score text
+    finalScoreText.setFont(font);
+    finalScoreText.setCharacterSize(40);
+    finalScoreText.setFillColor(sf::Color::White);
 }
 
 void Game::setScore(){ totalScore++; }
@@ -55,16 +95,29 @@ Game::~Game() {
 }
 
 void Game::initUI() {
+    // Standard Menu Buttons
     btnStart = new Button(300, 450, 200, 60, "PLAY", font);
-    btnRetry = new Button(250, 400, 300, 60, "TRY AGAIN", font);
-    btnMenu = new Button(250, 500, 300, 60, "MAIN MENU", font);
-    btnNextLevel = new Button(250, 400, 300, 60, "CONTINUE", font);
+    btnStart->setTexture("img/button.png");
 
+    btnRetry = new Button(250, 400, 300, 60, "TRY AGAIN", font);
+    btnRetry->setTexture("img/button.png");
+
+    btnMenu = new Button(250, 500, 300, 60, "MAIN MENU", font);
+    btnMenu->setTexture("img/button.png");
+
+    btnNextLevel = new Button(250, 400, 300, 60, "CONTINUE", font);
+    btnNextLevel->setTexture("img/button.png");
+
+    // Level Select Grid Buttons
     for (int i = 0; i < 8; i++) {
         float x = 100 + (i % 4) * 150; 
         float y = 200 + (i / 4) * 150; 
         std::string label = std::to_string(i + 1);
-        levelButtons.push_back(new Button(x, y, 100, 100, label, font));
+        
+        Button* lvlBtn = new Button(x, y, 100, 100, label, font);
+        lvlBtn->setTexture("img/buttonlevel.png"); // Different texture for levels
+        
+        levelButtons.push_back(lvlBtn);
     }
 }
 
@@ -105,10 +158,16 @@ void Game::processEvents() {
                 if (i < unlockedLevels && levelButtons[i]->isClicked(event, window)) {
                     currentLevelIdx = i + 1;
                     
+                    // Reset score for new game if needed, or keep accumulating
+                    // totalScore = 0; // Uncomment if score should reset per level attempt
+
                     if (currentLevelObject) delete currentLevelObject;
                     currentLevelObject = new Level(window);
                     currentLevelObject->loadLevel(currentLevelIdx, this);
                     
+                    // Store score before level starts to revert if lost
+                    scoreBeforeLevel = totalScore;
+
                     state = PLAYING;
                     
                     // Audio Transition: Menu -> Game
@@ -124,6 +183,9 @@ void Game::processEvents() {
         // --- GAME OVER STATE ---
         else if (state == GAME_OVER) {
             if (btnRetry->isClicked(event, window)) {
+                // Revert score since level was lost
+                totalScore = scoreBeforeLevel;
+
                 currentLevelObject->loadLevel(currentLevelIdx, this);
                 state = PLAYING;
                 
@@ -132,6 +194,9 @@ void Game::processEvents() {
                 bgmGame.play();
             }
             if (btnMenu->isClicked(event, window)) {
+                // Revert score
+                totalScore = scoreBeforeLevel;
+
                 state = MENU;
                 loadScreenBg("start_screen.png");
                 
@@ -149,6 +214,10 @@ void Game::processEvents() {
                 delete currentLevelObject;
                 currentLevelObject = new Level(window);
                 currentLevelObject->loadLevel(currentLevelIdx, this);
+                
+                // Update score snapshot for next level
+                scoreBeforeLevel = totalScore;
+
                 state = PLAYING;
                 
                 // Audio Transition: WinLose -> Game
@@ -220,10 +289,28 @@ void Game::render() {
             for (int i = 0; i < 8; i++) levelButtons[i]->draw(window);
         }
         else if (state == GAME_OVER) {
+            // Display score on Game Over screen (using score before level since current attempt failed)
+            finalScoreText.setString("Score: " + std::to_string(scoreBeforeLevel));
+            // Center text
+            sf::FloatRect textRect = finalScoreText.getLocalBounds();
+            finalScoreText.setOrigin(textRect.left + textRect.width/2.0f, textRect.top + textRect.height/2.0f);
+            finalScoreText.setPosition(400, 300); // Center of screen
+            
+            window.draw(finalScoreText);
+
             btnRetry->draw(window);
             btnMenu->draw(window);
         }
         else if (state == WIN) {
+            // Display score on Win screen
+            finalScoreText.setString("Score: " + std::to_string(totalScore));
+             // Center text
+            sf::FloatRect textRect = finalScoreText.getLocalBounds();
+            finalScoreText.setOrigin(textRect.left + textRect.width/2.0f, textRect.top + textRect.height/2.0f);
+            finalScoreText.setPosition(400, 300); // Center of screen
+
+            window.draw(finalScoreText);
+
             if (currentLevelIdx < 8) btnNextLevel->draw(window);
             btnMenu->draw(window);
         }

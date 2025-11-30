@@ -1,6 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp> // Added for Audio
+#include <SFML/Audio.hpp> 
 #include <vector>
 #include <string>
 
@@ -10,6 +10,7 @@
 #include "star.hpp"
 #include "HealthBar.hpp"
 #include "HealthPotion.hpp"
+#include "ColorChanger.hpp"
 class Game;
 class PlayerSprite;
 
@@ -30,7 +31,7 @@ private:
     sf::RenderWindow& window;
     PlayerSprite* player;
     HealthPotion* healthPotion;
-    
+    std::vector<ColorChanger*> colorChangers;
     std::vector<Obstacle*> obstacles;
     std::vector<Star*> stars;
     
@@ -50,12 +51,22 @@ private:
     float finishLineY;
     bool potionSpawned;
     
-    // Death Sequence Variables
+    // Death Sequence
     bool isDying;
     float deathTimer;
     float shakeTimer;
 
-    // Audio for Level
+    // --- NEW: Winning Sequence ---
+    bool isWinning;
+    float winTimer;
+    std::vector<Particle> confetti;
+    sf::Texture finishLineTexture;
+    sf::Sprite finishLineSprite;
+
+    void spawnConfetti();
+    // -----------------------------
+
+    // Audio
     sf::SoundBuffer damageBuffer;
     sf::Sound damageSound;
     sf::SoundBuffer dyingBuffer;
