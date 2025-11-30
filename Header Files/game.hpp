@@ -1,6 +1,6 @@
-// Header Files/Game.hpp
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp> // Added for Audio
 #include <vector>
 #include "Level.hpp"
 #include "Button.hpp"
@@ -24,30 +24,30 @@ private:
     void render();
 
     void initUI();
-    // loads background for menus like start or win
     void loadScreenBg(const std::string& filename); 
 
     sf::RenderWindow window;
     GameState state;
     
-    // pointer allows us to delete and recreate levels
     Level* currentLevelObject; 
 
-    // background for menus
     sf::Texture bgTexture;
     sf::Sprite bgSprite;
 
     sf::Font font;
     
-    // ui pointers
     Button* btnStart;
     Button* btnRetry;
     Button* btnMenu;
-    Button* btnNextLevel; // continues to next level
+    Button* btnNextLevel; 
     
-    // list of pointers for the level grid
     std::vector<Button*> levelButtons;
 
     int unlockedLevels;
     int currentLevelIdx;
+
+    // --- Audio Members ---
+    sf::Music bgmMenu;
+    sf::Music bgmGame;
+    sf::Music bgmWinLose;
 };

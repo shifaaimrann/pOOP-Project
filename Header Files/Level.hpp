@@ -1,6 +1,6 @@
-// Header Files/Level.hpp
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp> // Added for Audio
 #include <vector>
 #include <string>
 
@@ -13,38 +13,31 @@
 class Game;
 class PlayerSprite;
 
-
 class Level {
 public:
     Level(sf::RenderWindow& win); 
-    ~Level(); // destructor cleans up obstacles
+    ~Level(); 
 
     void loadLevel(int levelNum, Game*);
     void update(float dt, Game*);
     void handleInput(sf::Event& event);
     void draw();
     
-    // helpers for game manager
     bool hasLost() const { return isGameOver; }
     bool hasWon() const { return isWin; }
 
 private:
     sf::RenderWindow& window;
-    
-    // raw pointers for manual memory management
     PlayerSprite* player;
     HealthPotion* healthPotion;
     
-    // vector of pointers for mixed obstacle types
     std::vector<Obstacle*> obstacles;
     std::vector<Star*> stars;
     
-    // infinite background system
     sf::Texture bgTexture;
     sf::Sprite bgSprite1; 
     sf::Sprite bgSprite2; 
 
-    // ui elements
     sf::Font font;
     sf::Text scoreText;
     sf::Sprite scoreIcon;
@@ -57,6 +50,16 @@ private:
     float finishLineY;
     bool potionSpawned;
     
-    // handles infinite scrolling
+    // Death Sequence Variables
+    bool isDying;
+    float deathTimer;
+    float shakeTimer;
+
+    // Audio for Level
+    sf::SoundBuffer damageBuffer;
+    sf::Sound damageSound;
+    sf::SoundBuffer dyingBuffer;
+    sf::Sound dyingSound;
+
     void moveWorld(float offset);
 };

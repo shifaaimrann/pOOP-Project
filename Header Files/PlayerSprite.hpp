@@ -32,6 +32,8 @@ public:
         healthBar->setHealth(hp);
     }
 
+    // NEW: Explode function
+    void explode();
 
     // getters
     sf::Vector2f getPosition() const;
@@ -58,15 +60,14 @@ private:
     // particles vars
     std::vector<Particle> particles;
     float particleSpawnTimer;
-    float totalTime; // for rainbow effect
+    float totalTime; 
 
     float damageCooldown = 0.f;
-    const float damageDelay = 0.4f;  // 0.4 seconds between hits
+    const float damageDelay = 0.4f; 
     bool spriteVisible = true;
     float blinkTimer = 0.f;
     const float blinkInterval = 0.07f;
 
-
-
-
+    // NEW: Explosion flag
+    bool exploding = false;
 };

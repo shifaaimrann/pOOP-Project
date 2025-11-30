@@ -2,22 +2,45 @@
 #include "Header Files/game.hpp"
 #include <iostream>
 
-Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0){
+Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0) {
     window.setFramerateLimit(60);
     
-    font.loadFromFile("fonts/font.ttf");
+    if(!font.loadFromFile("fonts/font.ttf")) {
+        std::cerr << "Error loading fonts/font.ttf" << std::endl;
+    }
 
     state = MENU;
-    unlockedLevels = 1; 
-    currentLevelObject = nullptr; // no level loaded yet
+    unlockedLevels = 8; 
+    currentLevelObject = nullptr; 
 
     initUI();
     loadScreenBg("start_screen.png"); 
+
+    // --- AUDIO INIT ---
+    // Background music for Menu and Level Select
+    if (!bgmMenu.openFromFile("audio/mainmenuandlevels.mp3")) {
+        std::cerr << "Error loading audio/mainmenuandlevels.mp3" << std::endl;
+    }
+    bgmMenu.setLoop(true);
+
+    // Background music for Gameplay
+    if (!bgmGame.openFromFile("audio/whilePlaying.mp3")) {
+        std::cerr << "Error loading audio/whilePlaying.mp3" << std::endl;
+    }
+    bgmGame.setLoop(true);
+
+    // Music for Win/Lose Screens
+    if (!bgmWinLose.openFromFile("audio/game_lose_win.mp3")) {
+        std::cerr << "Error loading audio/game_lose_win.mp3" << std::endl;
+    }
+    bgmWinLose.setLoop(true);
+
+    // Start by playing menu music
+    bgmMenu.play();
 }
 
-void Game::setScore(){totalScore++;}
-int Game::getScore() const {return totalScore;}
-
+void Game::setScore(){ totalScore++; }
+int Game::getScore() const { return totalScore; }
 
 Game::~Game() {
     delete btnStart;
@@ -32,15 +55,11 @@ Game::~Game() {
 }
 
 void Game::initUI() {
-    // main menu buttons
     btnStart = new Button(300, 450, 200, 60, "PLAY", font);
-    
-    // game over and win buttons
     btnRetry = new Button(250, 400, 300, 60, "TRY AGAIN", font);
     btnMenu = new Button(250, 500, 300, 60, "MAIN MENU", font);
     btnNextLevel = new Button(250, 400, 300, 60, "CONTINUE", font);
 
-    // generate grid of 8 level buttons
     for (int i = 0; i < 8; i++) {
         float x = 100 + (i % 4) * 150; 
         float y = 200 + (i / 4) * 150; 
@@ -50,10 +69,9 @@ void Game::initUI() {
 }
 
 void Game::loadScreenBg(const std::string& filename) {
-    // attempts to load image from screens folder
     std::string path = "img/screens/" + filename;
     if (!bgTexture.loadFromFile(path)) {
-        std::cout << "missing image " << path << std::endl;
+        std::cerr << "Missing image " << path << std::endl;
     }
     bgSprite.setTexture(bgTexture);
 }
@@ -73,65 +91,78 @@ void Game::processEvents() {
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) window.close();
 
-        // menu state
+        // --- MENU STATE ---
         if (state == MENU) {
             if (btnStart->isClicked(event, window)) {
                 state = LEVEL_SELECT;
                 loadScreenBg("level_select.png");
+                // Note: bgmMenu continues playing in Level Select
             }
         }
-        // level select state
+        // --- LEVEL SELECT STATE ---
         else if (state == LEVEL_SELECT) {
             for (int i = 0; i < 8; i++) {
-                // only allow unlocked levels
                 if (i < unlockedLevels && levelButtons[i]->isClicked(event, window)) {
                     currentLevelIdx = i + 1;
                     
-                    // delete old level if it exists
                     if (currentLevelObject) delete currentLevelObject;
-                    
-                    // create new level
                     currentLevelObject = new Level(window);
                     currentLevelObject->loadLevel(currentLevelIdx, this);
                     
                     state = PLAYING;
+                    
+                    // Audio Transition: Menu -> Game
+                    bgmMenu.stop();
+                    bgmGame.play();
                 }
             }
         }
-        // playing state
+        // --- PLAYING STATE ---
         else if (state == PLAYING) {
             if (currentLevelObject) currentLevelObject->handleInput(event);
         }
-        // game over state
+        // --- GAME OVER STATE ---
         else if (state == GAME_OVER) {
             if (btnRetry->isClicked(event, window)) {
-                // reload same level
                 currentLevelObject->loadLevel(currentLevelIdx, this);
                 state = PLAYING;
+                
+                // Audio Transition: WinLose -> Game
+                bgmWinLose.stop();
+                bgmGame.play();
             }
             if (btnMenu->isClicked(event, window)) {
                 state = MENU;
                 loadScreenBg("start_screen.png");
+                
+                // Audio Transition: WinLose -> Menu
+                bgmWinLose.stop();
+                bgmMenu.play();
             }
         }
-        // win state
+        // --- WIN STATE ---
         else if (state == WIN) {
-            // next level button logic
             if (currentLevelIdx < 8 && btnNextLevel->isClicked(event, window)) {
                 currentLevelIdx++;
-                // unlock next level if it is new
                 if (currentLevelIdx > unlockedLevels) unlockedLevels = currentLevelIdx;
                 
-                // load the next level
                 delete currentLevelObject;
                 currentLevelObject = new Level(window);
                 currentLevelObject->loadLevel(currentLevelIdx, this);
                 state = PLAYING;
+                
+                // Audio Transition: WinLose -> Game
+                bgmWinLose.stop();
+                bgmGame.play();
             }
             
             if (btnMenu->isClicked(event, window)) {
                 state = MENU;
                 loadScreenBg("start_screen.png");
+                
+                // Audio Transition: WinLose -> Menu
+                bgmWinLose.stop();
+                bgmMenu.play();
             }
         }
     }
@@ -141,29 +172,34 @@ void Game::update(float dt) {
     if (state == PLAYING && currentLevelObject) {
         currentLevelObject->update(dt, this);
 
-            
         // CHECK FOR GAME OVER
         if (currentLevelObject->hasLost()) {
             state = GAME_OVER;
             loadScreenBg("game_over.png"); 
+            
+            // Audio Transition: Game -> Lose
+            bgmGame.stop();
+            bgmWinLose.play();
         }
         
         // CHECK FOR WIN
         if (currentLevelObject->hasWon()) {
             state = WIN;
             
-            // Logic to unlock the next level
             if (currentLevelIdx == unlockedLevels && unlockedLevels < 8) {
                 unlockedLevels++;
             }
             
             if (currentLevelIdx == 8) {
-                //if we just beat Level 8, we beat the whole game!
                 loadScreenBg("win_game.png");
             } 
             else {
                 loadScreenBg("level_win.png");
             }
+            
+            // Audio Transition: Game -> Win
+            bgmGame.stop();
+            bgmWinLose.play();
         }
     }
 }
@@ -172,11 +208,9 @@ void Game::render() {
     window.clear();
 
     if (state == PLAYING) {
-        // level draws its own background and objects
         if (currentLevelObject) currentLevelObject->draw();
     }
     else {
-        // draw the menu background image
         window.draw(bgSprite);
         
         if (state == MENU) {
