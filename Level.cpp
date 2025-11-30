@@ -114,212 +114,188 @@ void Level::spawnConfetti() {
         confetti.push_back(p);
     }
 }
-
 void Level::loadLevel(int levelNum, Game* g1) {
     currentLevel = levelNum;
     isGameOver = false;
     isWin = false;
     waitingToStart = true;
     potionSpawned = false;
-    
     isDying = false;
     deathTimer = 0.f;
     shakeTimer = 0.f;
-    
     isWinning = false;
     winTimer = 0.f;
     confetti.clear();
 
-    // Clear previous level data
-    for (size_t i = 0; i < obstacles.size(); ++i) delete obstacles[i];
+    for (auto* obs : obstacles) delete obs;
     obstacles.clear();
-    for (size_t i = 0; i < stars.size(); ++i) delete stars[i];
+    for (auto* s : stars) delete s;
     stars.clear();
-    for (size_t i = 0; i < colorChangers.size(); ++i) delete colorChangers[i];
+    for (auto* c : colorChangers) delete c;
     colorChangers.clear();
 
-    if (healthPotion != nullptr) {
-        delete healthPotion;
-        healthPotion = nullptr;
-    }
-    
+    if (healthPotion != nullptr) { delete healthPotion; healthPotion = nullptr; }
     if (player) delete player;
     player = new PlayerSprite(400.f, 500.f);
 
-    // Load infinite background
     std::string bgFile = "img/level backgrounds/level" + std::to_string(levelNum) + ".png";
-    if (!bgTexture.loadFromFile(bgFile)) {
-        bgTexture.loadFromFile("img/level backgrounds/level1.png"); 
-    }
+    if (!bgTexture.loadFromFile(bgFile)) bgTexture.loadFromFile("img/level backgrounds/level1.png"); 
     
     bgSprite1.setTexture(bgTexture);
     bgSprite2.setTexture(bgTexture);
     bgSprite1.setPosition(0, 0);
     bgSprite2.setPosition(0, -static_cast<float>(bgTexture.getSize().y));
 
-    // --- LEVEL LAYOUTS ---
+    // ==========================================
+    //           LEVEL DESIGNS
+    // ==========================================
+
     if (levelNum == 1) {
+        // --- Intro: Simple Wheel & Paddle ---
         obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, 90.f));
         stars.push_back(new Star(400.f, 200.f));
 
-        colorChangers.push_back(new ColorChanger(400.f, 50.f)); 
+        colorChangers.push_back(new ColorChanger(400.f, 0.f)); 
 
-        obstacles.push_back(new Paddle(400.f, -100.f, 200.f, 25.f));
-        stars.push_back(new Star(400.f, -150.f)); 
+        obstacles.push_back(new Paddle(400.f, -200.f, 200.f, 25.f));
+        stars.push_back(new Star(400.f, -250.f)); 
 
-        colorChangers.push_back(new ColorChanger(400.f, -250.f));
-
-        obstacles.push_back(new ColorWheel(400.f, -400.f, 100.f, 18.f, -90.f));
-        stars.push_back(new Star(400.f, -400.f));
-
-        finishLineY = -600.f;
+        finishLineY = -400.f;
     }
     else if (levelNum == 2) {
-        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, 80.f));
-        stars.push_back(new Star(400.f, 200.f));
+        // --- Two Wheels rotating opposite directions ---
+        obstacles.push_back(new ColorWheel(400.f, 150.f, 100.f, 18.f, 80.f));
+        stars.push_back(new Star(400.f, 150.f));
         
-        colorChangers.push_back(new ColorChanger(400.f, 50.f));
+        colorChangers.push_back(new ColorChanger(400.f, -50.f));
 
-        obstacles.push_back(new Paddle(400.f, -100.f, 200.f, 25.f));
-        stars.push_back(new Star(400.f, -130.f));
+        obstacles.push_back(new ColorWheel(400.f, -250.f, 100.f, 18.f, -80.f));
+        stars.push_back(new Star(400.f, -250.f));
 
-        colorChangers.push_back(new ColorChanger(400.f, -250.f));
+        obstacles.push_back(new Paddle(400.f, -450.f, 200.f, 25.f));
+        stars.push_back(new Star(400.f, -500.f));
 
-        obstacles.push_back(new Paddle(400.f, -400.f, 200.f, 25.f));
-        stars.push_back(new Star(400.f, -430.f));
-
-        colorChangers.push_back(new ColorChanger(400.f, -550.f));
-
-        obstacles.push_back(new ColorWheel(400.f, -700.f, 100.f, 18.f, -100.f));
-        stars.push_back(new Star(400.f, -700.f));
-
-        obstacles.push_back(new Paddle(400.f, -1000.f, 200.f, 25.f));
-        stars.push_back(new Star(400.f, -1030.f));
-        finishLineY = -1200.f;
+        finishLineY = -650.f;
     }
     else if (levelNum == 3) {
-        obstacles.push_back(new ColorWheel(400.f, 200.f, 200.f, 18.f, 60.f));
-        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 18.f, -50.f));
-        stars.push_back(new Star(400.f, 200.f)); 
+        // --- Introduction to the Square ---
+        obstacles.push_back(new ColorSquare(400.f, 150.f, 200.f, 20.f, 60.f));
+        stars.push_back(new Star(400.f, 150.f));
         
-        colorChangers.push_back(new ColorChanger(400.f, 50.f));
+        colorChangers.push_back(new ColorChanger(400.f, -50.f));
 
-        obstacles.push_back(new ColorWheel(400.f, -300.f, 180.f, 18.f, 50.f));
-        obstacles.push_back(new Paddle(400.f, -300.f, 180.f, 25.f));
-        stars.push_back(new Star(400.f, -200.f)); 
-        
-        colorChangers.push_back(new ColorChanger(400.f, -500.f));
+        obstacles.push_back(new ColorWheel(400.f, -300.f, 100.f, 18.f, 90.f));
+        stars.push_back(new Star(400.f, -300.f));
 
-        obstacles.push_back(new Paddle(400.f, -700.f, 200.f, 25.f));
-        stars.push_back(new Star(400.f, -530.f));
-        
-        obstacles.push_back(new ColorWheel(400.f, -900.f, 100.f, 18.f, 90.f));
-        stars.push_back(new Star(400.f, -800.f));
-        finishLineY = -1100.f;
+        colorChangers.push_back(new ColorChanger(400.f, -450.f));
+
+        obstacles.push_back(new ColorSquare(400.f, -650.f, 200.f, 20.f, -70.f));
+        stars.push_back(new Star(400.f, -650.f));
+
+        finishLineY = -850.f;
     }
     else if (levelNum == 4) {
-        obstacles.push_back(new ColorSquare(400.f, 150.f, 200.f, 20.f, 70.f));
-        stars.push_back(new Star(400.f, 150.f));
+        // --- The "Color Cross" (Fixed at x=350) ---
+        obstacles.push_back(new ColorCross(350.f, 200.f, 180.f, 20.f, 50.f)); 
+        stars.push_back(new Star(350.f, 200.f));
         
         colorChangers.push_back(new ColorChanger(400.f, 0.f));
 
-        obstacles.push_back(new Paddle(400.f, -150.f, 250.f, 25.f));
-        stars.push_back(new Star(400.f, -180.f));
-        
+        obstacles.push_back(new Paddle(250.f, -150.f, 150.f, 25.f)); // Left paddle
+        obstacles.push_back(new Paddle(550.f, -150.f, 150.f, 25.f)); // Right paddle
+        stars.push_back(new Star(400.f, -150.f)); // Star in gap
+
         colorChangers.push_back(new ColorChanger(400.f, -300.f));
 
-        obstacles.push_back(new ColorSquare(400.f, -450.f, 200.f, 20.f, -90.f));
-        stars.push_back(new Star(400.f, -450.f));
-        obstacles.push_back(new ColorWheel(400.f, -750.f, 100.f, 18.f, 80.f));
-        stars.push_back(new Star(400.f, -750.f));
-        finishLineY = -950.f;
+        // Another cross, faster
+        obstacles.push_back(new ColorCross(350.f, -500.f, 180.f, 20.f, -70.f));
+        stars.push_back(new Star(350.f, -500.f));
+
+        finishLineY = -700.f;
     }
     else if (levelNum == 5) {
-        obstacles.push_back(new ColorCross(400.f, 150.f, 180.f, 20.f, 60.f));
-        stars.push_back(new Star(400.f, 0.f)); 
-        
-        colorChangers.push_back(new ColorChanger(400.f, -100.f));
+        // --- Nested: Small Wheel inside Big Square ---
+        // Big Square
+        obstacles.push_back(new ColorSquare(400.f, 100.f, 280.f, 20.f, 40.f));
+        // Small Wheel inside
+        obstacles.push_back(new ColorWheel(400.f, 100.f, 90.f, 15.f, -60.f));
+        stars.push_back(new Star(400.f, 100.f));
 
-        obstacles.push_back(new ColorSquare(400.f, -250.f, 220.f, 20.f, -60.f));
-        stars.push_back(new Star(400.f, -250.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, -400.f));
-
-        obstacles.push_back(new Paddle(250.f, -500.f, 150.f, 25.f));
-        obstacles.push_back(new Paddle(550.f, -500.f, 150.f, 25.f));
-        stars.push_back(new Star(400.f, -500.f));
-        
-        obstacles.push_back(new ColorCross(400.f, -750.f, 180.f, 20.f, -100.f));
-        stars.push_back(new Star(400.f, -850.f));
-        finishLineY = -1000.f;
-    }
-    else if (levelNum == 6) {
-        obstacles.push_back(new ColorSpotWheel(400.f, 150.f, 130.f, 15.f, 16, 40.f));
-        stars.push_back(new Star(400.f, 150.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, 0.f));
-
-        obstacles.push_back(new ColorCross(400.f, -200.f, 160.f, 20.f, 80.f));
-        stars.push_back(new Star(400.f, -200.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, -400.f));
-
-        obstacles.push_back(new ColorSpotWheel(400.f, -550.f, 130.f, 18.f, 12, -70.f));
-        stars.push_back(new Star(400.f, -550.f));
-        obstacles.push_back(new ColorSquare(400.f, -850.f, 200.f, 20.f, 90.f));
-        stars.push_back(new Star(400.f, -850.f));
-        finishLineY = -1100.f;
-    }
-    else if (levelNum == 7) {
-        // obstacles.push_back(new LaserBeam(400.f, 250.f, 300.f, 10.f, 0.f)); 
-        // stars.push_back(new Star(400.f, 150.f));
-        
-        // colorChangers.push_back(new ColorChanger(400.f, 50.f));
-
-        obstacles.push_back(new ColorWheel(400.f, -50.f, 100.f, 18.f, 90.f));
-        stars.push_back(new Star(400.f, -50.f));
-        
         colorChangers.push_back(new ColorChanger(400.f, -150.f));
 
-        obstacles.push_back(new LaserBeam(200.f, -300.f, 100.f, 10.f, 150.f));
+        obstacles.push_back(new ColorSpotWheel(400.f, -350.f, 130.f, 15.f, 12, 50.f));
         stars.push_back(new Star(400.f, -350.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, -500.f));
 
-        obstacles.push_back(new ColorCross(200.f, -600.f, 180.f, 20.f, -80.f));
-        stars.push_back(new Star(400.f, -600.f));
-        obstacles.push_back(new Paddle(400.f, -900.f, 200.f, 25.f));
-        obstacles.push_back(new LaserBeam(600.f, -1000.f, 100.f, 10.f, -200.f));
-        stars.push_back(new Star(400.f, -1050.f));
-        finishLineY = -1200.f;
+        finishLineY = -550.f;
+    }
+    else if (levelNum == 6) {
+        // --- Nested: Cross inside Wheel ---
+        // Big Wheel
+        obstacles.push_back(new ColorWheel(400.f, 150.f, 160.f, 18.f, 50.f));
+        // Cross inside (Fixed at x=350 is tricky inside a 400 wheel, so we move wheel to 350)
+        obstacles.push_back(new ColorWheel(350.f, -100.f, 160.f, 18.f, -50.f));
+        obstacles.push_back(new ColorCross(350.f, -100.f, 120.f, 18.f, -50.f));
+        stars.push_back(new Star(350.f, -100.f));
+
+        colorChangers.push_back(new ColorChanger(350.f, -300.f));
+
+        obstacles.push_back(new ColorSquare(350.f, -500.f, 200.f, 20.f, 80.f));
+        stars.push_back(new Star(350.f, -500.f));
+
+        finishLineY = -700.f;
+    }
+    else if (levelNum == 7) {
+        // --- Lasers & Speed ---
+        // Laser guarding a star
+        obstacles.push_back(new LaserBeam(400.f, 200.f, 200.f, 10.f, 100.f)); // Moving laser
+        stars.push_back(new Star(400.f, 100.f));
+
+        colorChangers.push_back(new ColorChanger(400.f, -50.f));
+
+        obstacles.push_back(new ColorCross(350.f, -250.f, 180.f, 20.f, 90.f));
+        stars.push_back(new Star(350.f, -250.f));
+
+        // Double Laser Gate
+        obstacles.push_back(new LaserBeam(200.f, -450.f, 150.f, 10.f, 0.f));
+        obstacles.push_back(new LaserBeam(600.f, -450.f, 150.f, 10.f, 0.f));
+        stars.push_back(new Star(400.f, -450.f)); // Safe in middle
+
+        colorChangers.push_back(new ColorChanger(400.f, -600.f));
+
+        obstacles.push_back(new ColorSpotWheel(400.f, -800.f, 140.f, 18.f, 16, -60.f));
+        stars.push_back(new Star(400.f, -800.f));
+
+        finishLineY = -1000.f;
     }
     else if (levelNum == 8) {
-        obstacles.push_back(new ColorSquare(400.f, 200.f, 180.f, 20.f, 100.f));
+        // --- THE GAUNTLET (Boss Level) ---
+        // 1. Nested Wheel in Square
+        obstacles.push_back(new ColorSquare(400.f, 200.f, 260.f, 20.f, 50.f));
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 15.f, -80.f));
         stars.push_back(new Star(400.f, 200.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, 50.f));
 
-        obstacles.push_back(new ColorSpotWheel(400.f, -150.f, 140.f, 15.f, 12, -60.f));
-        stars.push_back(new Star(400.f, -150.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, -300.f));
+        colorChangers.push_back(new ColorChanger(400.f, -50.f));
 
-        obstacles.push_back(new LaserBeam(100.f, -400.f, 80.f, 10.f, 200.f));
-        obstacles.push_back(new LaserBeam(700.f, -500.f, 80.f, 10.f, -200.f));
-        stars.push_back(new Star(400.f, -450.f));
-        
-        colorChangers.push_back(new ColorChanger(400.f, -650.f));
+        // 2. Cross Field (x=350)
+        obstacles.push_back(new ColorCross(350.f, -250.f, 180.f, 20.f, 100.f)); // Fast!
+        stars.push_back(new Star(350.f, -250.f));
 
-        obstacles.push_back(new ColorWheel(400.f, -800.f, 180.f, 18.f, 50.f));
-        obstacles.push_back(new ColorCross(400.f, -800.f, 120.f, 15.f, -80.f));
-        stars.push_back(new Star(400.f, -800.f));
-        obstacles.push_back(new Paddle(400.f, -1100.f, 250.f, 25.f));
-        obstacles.push_back(new LaserBeam(400.f, -1200.f, 400.f, 10.f, 0.f)); 
-        stars.push_back(new Star(400.f, -1150.f));
-        finishLineY = -1400.f;
+        colorChangers.push_back(new ColorChanger(350.f, -450.f));
+
+        // 3. Laser Mayhem + Paddle
+        obstacles.push_back(new LaserBeam(400.f, -600.f, 300.f, 10.f, 150.f)); // Moving fast
+        obstacles.push_back(new Paddle(400.f, -750.f, 250.f, 25.f));
+        stars.push_back(new Star(400.f, -700.f));
+
+        // 4. Final Nested: Small Square inside Big Wheel
+        obstacles.push_back(new ColorWheel(400.f, -1000.f, 180.f, 20.f, 60.f));
+        obstacles.push_back(new ColorSquare(400.f, -1000.f, 150.f, 15.f, -60.f));
+        stars.push_back(new Star(400.f, -1000.f));
+
+        finishLineY = -1200.f;
     }
     else {
-        finishLineY = -500.f;
+        finishLineY = -500.f; // Fallback
     }
     
     finishLineSprite.setPosition(0, finishLineY);

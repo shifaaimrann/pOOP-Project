@@ -68,13 +68,17 @@ void PlayerSprite::applyTexture(const std::string& colorKey) {
 }
 
 void PlayerSprite::setRandomColor() {
-    // Pick a random color different from current? 
-    // Or just pure random. Usually pure random is fine.
-    int r = std::rand() % 4;
-    if (r == 0) applyTexture("Pink");
-    else if (r == 1) applyTexture("Blue");
-    else if (r == 2) applyTexture("Yellow");
-    else applyTexture("Red");
+    // Define available colors
+    std::vector<std::string> colors = {"Pink", "Blue", "Yellow", "Red"};
+    std::string newColor;
+
+    // Keep picking a random color until it is different from the current one
+    do {
+        int r = std::rand() % 4;
+        newColor = colors[r];
+    } while (newColor == currentColorKey);
+
+    applyTexture(newColor);
 }
 
 void PlayerSprite::explode() {

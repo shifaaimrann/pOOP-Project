@@ -149,7 +149,8 @@ public:
     void update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
-    float getDamage() const override { return 1.0f; }
+    // --- UPDATED DAMAGE ---
+    float getDamage() const override { return 12.0f; }
 
     bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
 
@@ -175,7 +176,9 @@ public:
     void update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
-    float getDamage() const override { return 1.0f; }
+    // --- UPDATED DAMAGE ---
+    float getDamage() const override { return 10.0f; }
+    
     bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
 
     sf::FloatRect getBounds() const override;
@@ -202,7 +205,9 @@ public:
     void update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
-    float getDamage() const override { return 1.0f; }
+    // --- UPDATED DAMAGE ---
+    float getDamage() const override { return 18.0f; }
+    
     bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
 
     sf::FloatRect getBounds() const override;

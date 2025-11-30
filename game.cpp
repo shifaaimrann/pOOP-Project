@@ -96,25 +96,25 @@ Game::~Game() {
 
 void Game::initUI() {
     // Standard Menu Buttons
-    btnStart = new Button(300, 450, 200, 60, "PLAY", font);
+    btnStart = new Button(250, 400, 400, 133, "PLAY", font);
     btnStart->setTexture("img/button.png");
 
-    btnRetry = new Button(250, 400, 300, 60, "TRY AGAIN", font);
+    btnRetry = new Button(220, 375, 400, 133, "TRY AGAIN", font);
     btnRetry->setTexture("img/button.png");
 
-    btnMenu = new Button(250, 500, 300, 60, "MAIN MENU", font);
+    btnMenu = new Button(220, 475, 400, 133, "MAIN MENU", font);
     btnMenu->setTexture("img/button.png");
 
-    btnNextLevel = new Button(250, 400, 300, 60, "CONTINUE", font);
+    btnNextLevel = new Button(220, 375, 400, 133, "CONTINUE", font);
     btnNextLevel->setTexture("img/button.png");
 
     // Level Select Grid Buttons
     for (int i = 0; i < 8; i++) {
-        float x = 100 + (i % 4) * 150; 
-        float y = 200 + (i / 4) * 150; 
+        float x = 70 + (i % 4) * 150; 
+        float y = 150 + (i / 4) * 150; 
         std::string label = std::to_string(i + 1);
         
-        Button* lvlBtn = new Button(x, y, 100, 100, label, font);
+        Button* lvlBtn = new Button(x, y, 200, 200, label, font);
         lvlBtn->setTexture("img/buttonlevel.png"); // Different texture for levels
         
         levelButtons.push_back(lvlBtn);
@@ -294,7 +294,7 @@ void Game::render() {
             // Center text
             sf::FloatRect textRect = finalScoreText.getLocalBounds();
             finalScoreText.setOrigin(textRect.left + textRect.width/2.0f, textRect.top + textRect.height/2.0f);
-            finalScoreText.setPosition(400, 300); // Center of screen
+            finalScoreText.setPosition(400, 200); // Center of screen
             
             window.draw(finalScoreText);
 
