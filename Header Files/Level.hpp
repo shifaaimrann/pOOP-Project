@@ -6,7 +6,6 @@
 
 #include "PlayerSprite.hpp"
 #include "Obstacle.hpp"
-#include "ColorWheel.hpp"
 #include "star.hpp"
 #include "HealthBar.hpp"
 #include "HealthPotion.hpp"

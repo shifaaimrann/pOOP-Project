@@ -172,10 +172,10 @@ void Level::loadLevel(int levelNum, Game* g1) {
         obstacles.push_back(new ColorWheel(400.f, -250.f, 100.f, 18.f, -80.f));
         stars.push_back(new Star(400.f, -250.f));
 
-        obstacles.push_back(new Paddle(400.f, -450.f, 200.f, 25.f));
+        obstacles.push_back(new Paddle(400.f, -600.f, 200.f, 25.f));
         stars.push_back(new Star(400.f, -500.f));
 
-        finishLineY = -650.f;
+        finishLineY = -750.f;
     }
     else if (levelNum == 3) {
         // --- Introduction to the Square ---
@@ -196,103 +196,132 @@ void Level::loadLevel(int levelNum, Game* g1) {
     }
     else if (levelNum == 4) {
         // --- The "Color Cross" (Fixed at x=350) ---
-        obstacles.push_back(new ColorCross(350.f, 200.f, 180.f, 20.f, 50.f)); 
-        stars.push_back(new Star(350.f, 200.f));
+        obstacles.push_back(new ColorCross(550.f, 200.f, 350.f, 20.f, 100.f)); 
+        obstacles.push_back(new ColorCross(250.f, 200.f, 350.f, 20.f, -100.f)); 
+        stars.push_back(new Star(400.f, 200.f));
         
         colorChangers.push_back(new ColorChanger(400.f, 0.f));
 
-        obstacles.push_back(new Paddle(250.f, -150.f, 150.f, 25.f)); // Left paddle
-        obstacles.push_back(new Paddle(550.f, -150.f, 150.f, 25.f)); // Right paddle
-        stars.push_back(new Star(400.f, -150.f)); // Star in gap
+        obstacles.push_back(new Paddle(400.f, -150.f, 1000.f, 15.f)); // Left paddle
+        // obstacles.push_back(new Paddle(400.f, -150.f, 100.f, 15.f));
+        // obstacles.push_back(new Paddle(550.f, -150.f, 100.f, 15.f)); // Right paddle
+        // obstacles.push_back(new Paddle(400.f, -200.f, 1000.f, 15.f)); // Left paddle
+        // obstacles.push_back(new Paddle(400.f, -200.f, 100.f, 15.f));
+        // obstacles.push_back(new Paddle(550.f, -200.f, 100.f, 15.f));
+        obstacles.push_back(new Paddle(400.f, -350.f, 1000.f, 15.f)); // Left paddle
+        // obstacles.push_back(new Paddle(400.f, -250.f, 100.f, 15.f));
+        // obstacles.push_back(new Paddle(550.f, -250.f, 100.f, 15.f));
+        // obstacles.push_back(new Paddle(250.f, -300.f, 800.f, 15.f)); // Left paddle
+        // obstacles.push_back(new Paddle(400.f, -300.f, 100.f, 15.f));
+        // obstacles.push_back(new Paddle(550.f, -300.f, 100.f, 15.f));
+        stars.push_back(new Star(400.f, -250.f)); // Star in gap
 
         colorChangers.push_back(new ColorChanger(400.f, -300.f));
 
         // Another cross, faster
-        obstacles.push_back(new ColorCross(350.f, -500.f, 180.f, 20.f, -70.f));
-        stars.push_back(new Star(350.f, -500.f));
+        obstacles.push_back(new ColorCross(250.f, -800.f, 350.f, 20.f, 70.f));
+        stars.push_back(new Star(400.f, -800.f));
 
-        finishLineY = -700.f;
+        finishLineY = -1100.f;
     }
     else if (levelNum == 5) {
         // --- Nested: Small Wheel inside Big Square ---
         // Big Square
-        obstacles.push_back(new ColorSquare(400.f, 100.f, 280.f, 20.f, 40.f));
+        obstacles.push_back(new ColorSquare(400.f, 100.f, 280.f, 20.f, -70.f));
         // Small Wheel inside
-        obstacles.push_back(new ColorWheel(400.f, 100.f, 90.f, 15.f, -60.f));
+        obstacles.push_back(new ColorWheel(400.f, 100.f, 90.f, 15.f, 60.f));
         stars.push_back(new Star(400.f, 100.f));
 
         colorChangers.push_back(new ColorChanger(400.f, -150.f));
 
-        obstacles.push_back(new ColorSpotWheel(400.f, -350.f, 130.f, 15.f, 12, 50.f));
-        stars.push_back(new Star(400.f, -350.f));
+        obstacles.push_back(new ColorSpotWheel(400.f, -500.f, 100.f, 10.f, 30, 70.f));
+        obstacles.push_back(new ColorSpotWheel(400.f, -500.f, 150.f, 15.f, 30, -60.f));
+        obstacles.push_back(new ColorSpotWheel(400.f, -500.f, 200.f, 20.f, 30, 70.f));
+        stars.push_back(new Star(400.f, -500.f));
 
-        finishLineY = -550.f;
+        // stars.push_back(new Star(400.f, -800.f));
+
+        finishLineY = -900.f;
     }
     else if (levelNum == 6) {
         // --- Nested: Cross inside Wheel ---
         // Big Wheel
-        obstacles.push_back(new ColorWheel(400.f, 150.f, 160.f, 18.f, 50.f));
+        obstacles.push_back(new ColorWheel(400.f, 150.f, 160.f, 15.f, 80.f));
+        stars.push_back(new Star(400.f, 50.f));
         // Cross inside (Fixed at x=350 is tricky inside a 400 wheel, so we move wheel to 350)
-        obstacles.push_back(new ColorWheel(350.f, -100.f, 160.f, 18.f, -50.f));
-        obstacles.push_back(new ColorCross(350.f, -100.f, 120.f, 18.f, -50.f));
-        stars.push_back(new Star(350.f, -100.f));
+        obstacles.push_back(new ColorWheel(350.f, -100.f, 260.f, 15.f, -50.f));
+        obstacles.push_back(new ColorCross(300.f, -150.f, 220.f, 10.f, -100.f));
+        stars.push_back(new Star(400.f, -100.f));
 
-        colorChangers.push_back(new ColorChanger(350.f, -300.f));
+        colorChangers.push_back(new ColorChanger(400.f, -275.f));
 
-        obstacles.push_back(new ColorSquare(350.f, -500.f, 200.f, 20.f, 80.f));
-        stars.push_back(new Star(350.f, -500.f));
+        obstacles.push_back(new ColorSquare(400.f, -700.f, 200.f, 20.f, 80.f));
+        stars.push_back(new Star(400.f, -500.f));
+        stars.push_back(new Star(400.f, -700.f));
 
-        finishLineY = -700.f;
+        finishLineY = -900.f;
     }
     else if (levelNum == 7) {
         // --- Lasers & Speed ---
         // Laser guarding a star
+        obstacles.push_back(new ColorSquare(400.f, -200.f, 200.f, 10.f, 80.f));
+        obstacles.push_back(new ColorSquare(400.f, -700.f, 300.f, 10.f, 100.f));
+        obstacles.push_back(new ColorSquare(400.f, -1400.f, 400.f, 10.f, 120.f));
+        obstacles.push_back(new ColorSquare(400.f, -1700.f, 500.f, 10.f, 140.f));
+
         obstacles.push_back(new LaserBeam(400.f, 200.f, 200.f, 10.f, 100.f)); // Moving laser
-        stars.push_back(new Star(400.f, 100.f));
+        
+        stars.push_back(new Star(400.f, -200.f));
+        stars.push_back(new Star(400.f, -700.f));
+        stars.push_back(new Star(400.f, -1400.f));
+        stars.push_back(new Star(400.f, -1700.f));
 
-        colorChangers.push_back(new ColorChanger(400.f, -50.f));
+        colorChangers.push_back(new ColorChanger(400.f, -400.f));
+        colorChangers.push_back(new ColorChanger(400.f, -1000.f));
+        // colorChangers.push_back(new ColorChanger(400.f, -400.f));
+        
 
-        obstacles.push_back(new ColorCross(350.f, -250.f, 180.f, 20.f, 90.f));
-        stars.push_back(new Star(350.f, -250.f));
+        // obstacles.push_back(new ColorCross(350.f, -250.f, 180.f, 20.f, -90.f));
+        // stars.push_back(new Star(350.f, -250.f));
 
         // Double Laser Gate
         obstacles.push_back(new LaserBeam(200.f, -450.f, 150.f, 10.f, 0.f));
         obstacles.push_back(new LaserBeam(600.f, -450.f, 150.f, 10.f, 0.f));
-        stars.push_back(new Star(400.f, -450.f)); // Safe in middle
+        // stars.push_back(new Star(400.f, -450.f)); // Safe in middle
 
-        colorChangers.push_back(new ColorChanger(400.f, -600.f));
+        // colorChangers.push_back(new ColorChanger(400.f, -600.f));
 
-        obstacles.push_back(new ColorSpotWheel(400.f, -800.f, 140.f, 18.f, 16, -60.f));
-        stars.push_back(new Star(400.f, -800.f));
+        // obstacles.push_back(new ColorSpotWheel(400.f, -800.f, 140.f, 18.f, 16, -60.f));
+        stars.push_back(new Star(400.f, -1900.f));
 
-        finishLineY = -1000.f;
+        finishLineY = -2200.f;
     }
     else if (levelNum == 8) {
         // --- THE GAUNTLET (Boss Level) ---
         // 1. Nested Wheel in Square
-        obstacles.push_back(new ColorSquare(400.f, 200.f, 260.f, 20.f, 50.f));
-        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 15.f, -80.f));
+        obstacles.push_back(new ColorSquare(400.f, 200.f, 260.f, 20.f, 100.f));
+        obstacles.push_back(new ColorWheel(400.f, 200.f, 100.f, 15.f, -160.f));
         stars.push_back(new Star(400.f, 200.f));
 
         colorChangers.push_back(new ColorChanger(400.f, -50.f));
 
         // 2. Cross Field (x=350)
-        obstacles.push_back(new ColorCross(350.f, -250.f, 180.f, 20.f, 100.f)); // Fast!
-        stars.push_back(new Star(350.f, -250.f));
+        obstacles.push_back(new ColorCross(350.f, -250.f, 180.f, 20.f, -200.f)); // Fast!
+        stars.push_back(new Star(400.f, -250.f));
 
-        colorChangers.push_back(new ColorChanger(350.f, -450.f));
+        colorChangers.push_back(new ColorChanger(400.f, -450.f));
 
         // 3. Laser Mayhem + Paddle
-        obstacles.push_back(new LaserBeam(400.f, -600.f, 300.f, 10.f, 150.f)); // Moving fast
-        obstacles.push_back(new Paddle(400.f, -750.f, 250.f, 25.f));
+        obstacles.push_back(new LaserBeam(400.f, -600.f, 300.f, 10.f, 250.f)); // Moving fast
+        // obstacles.push_back(new Paddle(400.f, -750.f, 250.f, 25.f));
         stars.push_back(new Star(400.f, -700.f));
 
         // 4. Final Nested: Small Square inside Big Wheel
         obstacles.push_back(new ColorWheel(400.f, -1000.f, 180.f, 20.f, 60.f));
-        obstacles.push_back(new ColorSquare(400.f, -1000.f, 150.f, 15.f, -60.f));
+        obstacles.push_back(new ColorSquare(400.f, -1000.f, 150.f, 15.f, -70.f));
         stars.push_back(new Star(400.f, -1000.f));
 
-        finishLineY = -1200.f;
+        finishLineY = -1400.f;
     }
     else {
         finishLineY = -500.f; // Fallback

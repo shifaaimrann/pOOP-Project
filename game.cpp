@@ -51,7 +51,7 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0) {
     initUI();
     loadScreenBg("start_screen.png"); 
 
-    // --- AUDIO INIT ---
+    --- AUDIO INIT ---
     // Background music for Menu and Level Select
     if (!bgmMenu.openFromFile("audio/mainmenuandlevels.mp3")) {
         std::cerr << "Error loading audio/mainmenuandlevels.mp3" << std::endl;
