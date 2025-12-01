@@ -11,7 +11,7 @@ public:
         
         sprite.setTexture(texture);
         sprite.setOrigin(texture.getSize().x / 2.f, texture.getSize().y / 2.f);
-        sprite.setScale(0.5f, 0.5f); // Adjust scale as needed
+        sprite.setScale(0.4f, 0.4f); // Adjust scale as needed
         
         position = sf::Vector2f(x, y);
         sprite.setPosition(position);

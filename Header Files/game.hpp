@@ -1,8 +1,10 @@
 // Header Files/Game.hpp
 #pragma once
+#include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp> // Added for Audio
 #include <vector>
+#include <mutex>
 #include "Level.hpp"
 #include "Button.hpp"
 class Level;
@@ -17,6 +19,12 @@ public:
     int getScore() const;
 
     void run();
+    static Game& getInstance(){
+        static Game game;
+        return game;
+    }
+    Game(const Game&)=delete;
+    Game& operator=(const Game& )=delete;
 
 private:
     int totalScore;
@@ -64,4 +72,6 @@ private:
     sf::Music bgmMenu;
     sf::Music bgmGame;
     sf::Music bgmWinLose;
+    //static Game* instancepointer;
+    //static mutex mtx;
 };
