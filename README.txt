@@ -2,7 +2,7 @@
 
 INTRODUCTION:
 Revamped version of the popular game Color Switch, includes health bar, stars, potion, and levels made with different obstacles with increasing difficulty. 
-Can you help Miffy pass all the players?
+Can you help Miffy pass all the levels?
 Warning: Might be almost too cute
 
 REQUIREMENTS:
