@@ -5,9 +5,7 @@
 class HealthPotion : public Element {
 public:
     HealthPotion(float x, float y) {
-        if (!texture.loadFromFile("img/potion.png")) {
-            // Handle error
-        }
+       
         
         sprite.setTexture(texture);
         sprite.setOrigin(texture.getSize().x / 2.f, texture.getSize().y / 2.f);

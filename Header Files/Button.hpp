@@ -9,7 +9,6 @@ public:
     // pass font by reference to save memory
     Button(float x, float y, float w, float h, std::string text, sf::Font& font);
 
-    // swap the gray box for a real image
     void setTexture(const std::string& filename);
 
     void draw(sf::RenderWindow& window);
