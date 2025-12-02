@@ -2,7 +2,7 @@
 #include "Element.hpp"
 #include <string> 
 #include <vector>
-#include <map> // ADD THIS
+#include <map> 
 #include <SFML/Graphics.hpp>
 #include "HealthBar.hpp"
 
@@ -26,7 +26,7 @@ public:
 
     void jump();
     
-    // CHANGED: Now switches texture based on predefined colors
+    
     void setRandomColor(); 
     
     void onCollision(const std::string& type, float, Game* game); 
@@ -44,8 +44,7 @@ public:
 
 private:
     sf::Sprite  playerSprite; 
-    
-    // NEW: Texture storage
+  
     std::map<std::string, sf::Texture> textures;
     std::string currentColorKey;
 

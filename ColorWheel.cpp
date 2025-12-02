@@ -55,7 +55,7 @@ sf::FloatRect ColorWheel::getBounds() const {
     return sf::FloatRect(position.x - m_radius, position.y - m_radius, m_radius * 2, m_radius * 2);
 }
 
-// --- THE FIXED COLLISION LOGIC ---
+
 bool ColorWheel::checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const {
     float dx = playerPos.x - position.x;
     float dy = playerPos.y - position.y;

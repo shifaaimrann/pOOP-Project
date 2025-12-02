@@ -80,7 +80,7 @@ sf::FloatRect ColorSpotWheel::getBounds() const
     );
 }
 
-// --------- COLLISION USING SAME LOGIC AS ORIGINAL WHEEL ----------
+
 bool ColorSpotWheel::checkCollision(sf::FloatRect, sf::Color playerColor, sf::Vector2f playerPos) const
 {
     float dx = playerPos.x - position.x;

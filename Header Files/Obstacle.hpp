@@ -55,8 +55,7 @@ public:
             paddleShape.setFillColor(color);
         }
 
-        // 2. Sync Position (CRITICAL for scrolling)
-        // If the level moves the 'Element::position', we must update the shape
+
         paddleShape.setPosition(position); 
     }
 
@@ -106,7 +105,7 @@ public:
     }
 
     void update(float dt) override {
-        // OPTIONAL: move left-right
+
         if (speed != 0.f) {
             position.x += speed * dt;
 
@@ -126,7 +125,7 @@ public:
         return beam.getGlobalBounds();
     }
 
-    // Simple: if intersect → damage
+    // Simple: if intersect , damage
     bool checkCollision(sf::FloatRect playerBounds,
                         sf::Color playerColor,
                         sf::Vector2f playerPos) const override
@@ -150,7 +149,7 @@ public:
     void update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
-    // --- UPDATED DAMAGE ---
+
     float getDamage() const override { return 12.0f; }
 
     bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
@@ -206,7 +205,6 @@ public:
     void update(float dt) override;
     void Draw(sf::RenderWindow& window) override;
 
-    // --- UPDATED DAMAGE ---
     float getDamage() const override { return 18.0f; }
     
     bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
@@ -236,7 +234,6 @@ public:
     virtual void Draw(sf::RenderWindow& window) override;
     virtual sf::FloatRect getBounds() const override;
 
-    // --- NEW: The complex math goes here, hiding it from Main ---
     virtual bool checkCollision(sf::FloatRect playerBounds, sf::Color playerColor, sf::Vector2f playerPos) const override;
 
     float getDamage() const override {return 8.0f;}

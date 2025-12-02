@@ -75,7 +75,7 @@ sf::FloatRect ColorCross::getBounds() const
     return sf::FloatRect(position.x - m_armLength/2.f, position.y - m_armLength/2.f, m_armLength, m_armLength);
 }
 
-// ---------- Collision logic ----------
+
 bool ColorCross::checkCollision(sf::FloatRect, sf::Color playerColor, sf::Vector2f playerPos) const
 {
     // Transform player position into cross's local coordinates

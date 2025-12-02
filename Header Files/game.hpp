@@ -39,10 +39,10 @@ private:
 
     sf::RenderWindow window;
     
-    // --- NEW: Custom Cursor Members ---
+
     sf::Cursor gameCursor;
     sf::Image cursorImage;
-    // ----------------------------------
+
 
     GameState state;
     

@@ -13,30 +13,29 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0) {
     unlockedLevels = 8; 
     currentLevelObject = nullptr; 
 
-    // --- NEW: Load AND Resize Custom Cursor ---
-    // This fixes the "too big" issue and aligns the click point
+
     sf::Texture cursorTex;
     if (cursorTex.loadFromFile("img/cursor.png")) {
-        // 1. Create a sprite for the cursor
+        //  Create a sprite for the cursor
         sf::Sprite cursorSprite(cursorTex);
         
-        // 2. Target a standard cursor size (e.g., 32x32 pixels)
+        //  standard cursor size 
         float targetSize = 32.0f; 
         float scaleX = targetSize / cursorTex.getSize().x;
         float scaleY = targetSize / cursorTex.getSize().y;
         cursorSprite.setScale(scaleX, scaleY);
 
-        // 3. Draw resized cursor onto a Render Texture
+        // Draw resized cursor onto a Render Texture
         sf::RenderTexture rt;
         if (rt.create(32, 32)) {
             rt.clear(sf::Color::Transparent);
             rt.draw(cursorSprite);
             rt.display();
 
-            // 4. Convert back to Image for the Cursor object
+            //  Convert back to Image for the Cursor object
             cursorImage = rt.getTexture().copyToImage();
             
-            // 5. Set Cursor (Hotspot at 0,0 - top left)
+            // Set Cursor 
             if (gameCursor.loadFromPixels(cursorImage.getPixelsPtr(), {32, 32}, {0, 0})) {
                 window.setMouseCursor(gameCursor);
             } else {
@@ -51,7 +50,7 @@ Game::Game() : window(sf::VideoMode(800, 600), "Miffy Switch"), totalScore(0) {
     initUI();
     loadScreenBg("start_screen.png"); 
 
-    --- AUDIO INIT ---
+    //--- AUDIO ---
     // Background music for Menu and Level Select
     if (!bgmMenu.openFromFile("audio/mainmenuandlevels.mp3")) {
         std::cerr << "Error loading audio/mainmenuandlevels.mp3" << std::endl;
@@ -144,7 +143,7 @@ void Game::processEvents() {
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) window.close();
 
-        // --- MENU STATE ---
+        // --- MENU ---
         if (state == MENU) {
             if (btnStart->isClicked(event, window)) {
                 state = LEVEL_SELECT;
@@ -152,7 +151,7 @@ void Game::processEvents() {
                 // Note: bgmMenu continues playing in Level Select
             }
         }
-        // --- LEVEL SELECT STATE ---
+        // --- LEVEL SELECT ---
         else if (state == LEVEL_SELECT) {
             for (int i = 0; i < 8; i++) {
                 if (i < unlockedLevels && levelButtons[i]->isClicked(event, window)) {
@@ -266,7 +265,7 @@ void Game::update(float dt) {
                 loadScreenBg("level_win.png");
             }
             
-            // Audio Transition: Game -> Win
+            // Game -> Win
             bgmGame.stop();
             bgmWinLose.play();
         }
@@ -289,7 +288,7 @@ void Game::render() {
             for (int i = 0; i < 8; i++) levelButtons[i]->draw(window);
         }
         else if (state == GAME_OVER) {
-            // Display score on Game Over screen (using score before level since current attempt failed)
+            // Display score on Game Over screen 
             finalScoreText.setString("Score: " + std::to_string(scoreBeforeLevel));
             // Center text
             sf::FloatRect textRect = finalScoreText.getLocalBounds();

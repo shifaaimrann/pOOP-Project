@@ -19,7 +19,7 @@ public:
 
         // Ensure fullSprite initially uses the whole texture
         fullSprite.setTextureRect(sf::IntRect(0, 0, fullWidth, fullTex.getSize().y));
-        // Increased scale from 0.09f to 0.15f (approx 66% larger)
+        // Increased scale 
         emptySprite.setScale(0.15f, 0.15f);  
         fullSprite.setScale(0.15f, 0.15f);
 

@@ -15,8 +15,7 @@ sf::Color getRainbow(float t) {
 }
 
 PlayerSprite::PlayerSprite(float x, float y) : healthBar(nullptr){
-    // --- NEW: Load all color variants ---
-    // Ensure these files exist in img/playersprites/
+  
     if (!textures["Pink"].loadFromFile("img/playersprites/player_pink.png")) std::cerr << "Missing player_pink.png\n";
     if (!textures["Blue"].loadFromFile("img/playersprites/player_blue.png")) std::cerr << "Missing player_blue.png\n";
     if (!textures["Yellow"].loadFromFile("img/playersprites/player_yellow.png")) std::cerr << "Missing player_yellow.png\n";
@@ -36,7 +35,7 @@ PlayerSprite::PlayerSprite(float x, float y) : healthBar(nullptr){
 
     position = sf::Vector2f(x, y);
     
-    // Set initial color (e.g., Pink)
+    // Set initial color 
     applyTexture("Pink");
     
     isActive = true;
@@ -50,20 +49,18 @@ PlayerSprite::PlayerSprite(float x, float y) : healthBar(nullptr){
     playerSprite.setPosition(position);
 }
 
-// NEW: Switch to a specific texture map
+// Switch to a specific texture map
 void PlayerSprite::applyTexture(const std::string& colorKey) {
     currentColorKey = colorKey;
     playerSprite.setTexture(textures[colorKey]);
     playerSprite.setTextureRect(currentFrameRect); // Re-apply rect to new texture
 
-    // Update the inherited 'color' field so collisions work
     if (colorKey == "Pink") color = sf::Color(255, 0, 255); // Magenta
     else if (colorKey == "Blue") color = sf::Color::Blue;
     else if (colorKey == "Yellow") color = sf::Color::Yellow;
     else if (colorKey == "Red") color = sf::Color::Red;
     
-    // NOTE: We DO NOT call playerSprite.setColor() anymore! 
-    // The texture provides the color.
+
     playerSprite.setColor(sf::Color::White); // Reset tint to pure
 }
 
@@ -205,7 +202,7 @@ void PlayerSprite::onCollision(const std::string& type, float damageAmount, Game
         score++;
         if(game) game->setScore();
     }
-    // NEW: Color Changer Logic
+    // Color Changer Logic
     else if (type == "ColorChanger") {
         setRandomColor();
         // Optional: Small upward boost when changing color?

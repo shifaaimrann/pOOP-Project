@@ -29,7 +29,7 @@ void Button::setTexture(const std::string& filename) {
         sprite.setTexture(texture);
         sprite.setPosition(shape.getPosition());
         
-        // --- RESTORED: Scale image to fit the button shape exactly ---
+      
         sf::Vector2u tSize = texture.getSize();
         sf::Vector2f bSize = shape.getSize();
 
@@ -37,7 +37,7 @@ void Button::setTexture(const std::string& filename) {
         float scaleY = bSize.y / tSize.y;
 
         sprite.setScale(scaleX, scaleY);
-        // -------------------------------------------------------------
+        
 
         hasTexture = true;
     }

@@ -19,9 +19,7 @@ Star::Star(float x, float y) {
 void Star::update(float dt) {
     if (!isActive || collected) return;
 
-    // --- FIXED: Sync the visual sprite with the logical position ---
-    // When Level calls star->move(), 'position' changes, but we must 
-    // tell the sprite to go there!
+    // Sync the visual sprite with the logical position
     starSprite.setPosition(position);
 }
 

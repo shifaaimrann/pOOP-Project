@@ -55,7 +55,6 @@ private:
     float deathTimer;
     float shakeTimer;
 
-    // --- NEW: Winning Sequence ---
     bool isWinning;
     float winTimer;
     std::vector<Particle> confetti;
@@ -63,7 +62,7 @@ private:
     sf::Sprite finishLineSprite;
 
     void spawnConfetti();
-    // -----------------------------
+
 
     // Audio
     sf::SoundBuffer damageBuffer;

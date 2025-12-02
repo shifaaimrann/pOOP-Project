@@ -1,12 +1,14 @@
 #pragma once
 #include "Element.hpp"
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 class ColorChanger : public Element {
 public:
     ColorChanger(float x, float y) {
         if (!texture.loadFromFile("img/colorchange.png")) {
-            // Handle error or fallback
+            // Handle error
+            // cout<<"Error loading from file"<<endl;
         }
         sprite.setTexture(texture);
         
