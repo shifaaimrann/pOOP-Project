@@ -134,6 +134,7 @@ void Level::loadLevel(int levelNum, Game* g1) {
     for (auto* c : colorChangers) delete c;
     colorChangers.clear();
 
+    
     if (healthPotion != nullptr) { delete healthPotion; healthPotion = nullptr; }
     if (player) delete player;
     player = new PlayerSprite(400.f, 500.f);

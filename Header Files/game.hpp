@@ -13,7 +13,7 @@ enum GameState { MENU, LEVEL_SELECT, PLAYING, GAME_OVER, WIN };
 
 class Game {
 public:
-    Game();
+   
     ~Game(); // destructor to clean up pointers
     void setScore();
     int getScore() const;
@@ -27,6 +27,7 @@ public:
     Game& operator=(const Game& )=delete;
 
 private:
+     Game();
     int totalScore;
     int scoreBeforeLevel; // To revert score on loss
     void processEvents();
